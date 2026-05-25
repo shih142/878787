@@ -505,7 +505,7 @@ if not df.empty:
             
             st.divider()
             
-            st.markdown("#### 📋 品牌動態加權 CP值轉換總表")
+            st.markdown("#### 📋 品牌動態加權 CP 值轉換總表")
             psych_summary = psych_df.groupby('店家').agg(
                 高質感品項數=('消費者體感', lambda x: (x == "💸 品牌溢價 (主打高質感)").sum()),
                 符合預期數=('消費者體感', lambda x: (x == "😐 符合預期 (市場行情)").sum()),
@@ -582,7 +582,7 @@ if not df.empty:
         st.dataframe(filtered_df, use_container_width=True)
 
     # ------------------------------------------
-    # 頁籤 9：AI 全能商業戰略總結報告
+    # 頁籤 9：AI 全能商業戰略總結報告 (優化重製究極版)
     # ------------------------------------------
     with tab9:
         st.markdown("### 📝 AI 全能商業戰略總結報告 (Executive Summary)")
@@ -590,6 +590,7 @@ if not df.empty:
         
         if not filtered_df.empty and filtered_df['店家'].nunique() > 0:
             with st.spinner("🧠 AI 大腦正在深度運算全域矩陣..."):
+                # 1. 基礎指標提取
                 total_brands = filtered_df['店家'].nunique()
                 total_items = len(filtered_df)
                 global_avg_price = filtered_df['價格(L)'].mean()
@@ -600,9 +601,15 @@ if not df.empty:
                     加料數=('加料', 'sum')
                 ).reset_index()
                 
+                # 2. 進階矩陣計算
                 top_base = filtered_df['標籤1'].value_counts().idxmax() if '標籤1' in filtered_df.columns and not filtered_df['標籤1'].empty else "未分類"
                 top_base_pct = (filtered_df['標籤1'] == top_base).sum() / total_items * 100 if total_items > 0 else 0
+                topping_pct = (filtered_df['加料'] == 1.0).sum() / total_items * 100 if total_items > 0 else 0
                 
+                # ==========================================
+                # 🔥 升級版 AI 分析引擎：雙維度戰略矩陣 (價格水位 x 產品結構)
+                # ==========================================
+                # 判斷維度 1：市場定價水位 (Price Level)
                 if global_avg_price >= 70:
                     price_tier = "premium"
                     market_type = "💎 頂尖客單奢華型藍海"
@@ -616,6 +623,7 @@ if not df.empty:
                     price_tier = "budget"
                     market_type = "🥊 價格破壞型下沉紅海"
 
+                # 判斷維度 2：加料變現依賴度 (Topping Dependency)
                 if topping_pct >= 45:
                     product_strategy = "高度甜品化，極度依賴咀嚼系配料（如白玉、奶蓋、寒天）來拉高客單價與飽足感。"
                     topping_type = "heavy"
@@ -626,21 +634,26 @@ if not df.empty:
                     product_strategy = "極致純淨，主打茶湯底蘊與原物料本質，刻意降低吧台出杯工序。"
                     topping_type = "light"
 
+                # 綜合生成 Strategic Focus (戰略方針)
                 if price_tier == "premium":
                     if topping_type == "heavy":
                         strategic_focus = f"【奢華甜品化】{product_strategy} 建議強化配料的『稀缺性』（如法式慕斯、季節限定鮮果），透過高顏值視覺包裝創造 IG 傳播效應，此客群對價格極不敏感，賣的是犒賞感。"
                     else:
                         strategic_focus = f"【職人工藝茶】{product_strategy} 行銷應極致放大『單一產區、契作茶園、職人手沖』等故事性。捨棄花俏配料，以純粹的品茶文化建立堅不可摧的品牌信仰。"
+                
                 elif price_tier == "mid-high":
                     if topping_type == "heavy" or topping_type == "balanced":
                         strategic_focus = f"【微創新突圍】此區間為兵家必爭之地。{product_strategy} 建議透過研發『特色帶路雞』（如獨家口味茶凍、新創基底茶）打破定價僵局，創造競品無法輕易複製的記憶點。"
                     else:
                         strategic_focus = f"【輕負擔精緻飲】{product_strategy} 鎖定注重健康的都會白領，建議行銷主打『低卡、無糖也順口、小農契作』，拉開與大眾市場的質感差距。"
+                
                 elif price_tier == "mass":
                     strategic_focus = f"【規模化防禦】{product_strategy} 核心重點在於『高轉化率與出杯流速』。必須嚴控供應鏈成本，透過數位化點單、會員寄杯點數機制，死死綁定區域型消費者的日常復購習慣。"
+                
                 else:
                     strategic_focus = f"【極致效率戰】{product_strategy} 生存法則唯有『規模經濟與極致成本控制』。應大刀闊斧刪減低周轉品項，菜單聚焦於爆款純茶與少數暢銷配料，以連鎖量販模式搶佔市佔率。"
                     
+                # 3. 頂層視覺看板渲染
                 st.markdown(f"""
                 <div style="background: linear-gradient(135deg, #1E1B4B 0%, #311042 100%); color: #F8FAFC; padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px;">
                     <h3 style="color: #A5B4FC; margin-top: 0; font-weight: 900; letter-spacing: 1px;">🔮 戰情官決策大腦：戰略白皮書</h3>
@@ -663,6 +676,7 @@ if not df.empty:
                 </div>
                 """, unsafe_allow_html=True)
                 
+                # 4. 戰略三大支柱剖析
                 col_strat1, col_strat2 = st.columns(2)
                 with col_strat1:
                     st.markdown("#### 🎯 支柱一：定價與菜單工程 (Menu Engineering)")
@@ -696,13 +710,13 @@ if not df.empty:
                     1.  **市場定位診斷**：目前市場定位屬於 **{market_type}**，核心戰略為：*{strategic_focus}*。
                     2.  **向標竿看齊 (高價溢價)**：參考當前均價最高昂的品牌 **{leader_brand}** 的定價與視覺呈現，檢視自身的產品故事包裝，是否具備支撐高客單價的「情感溢價價值」。
                     3.  **菜單工程斷捨離 (降低內耗)**：目前品項數最多的品牌為 **{volume_brand}**。對於中小型新創品牌，品項過多將導致供應鏈臃腫與原料耗損。強烈建議實施『菜單精簡化』，將品項限縮在 30 款核心爆款內，聚焦出杯效率。
-                    4.  **定價動態回測**：在每一次新品研發或配方調整前，請隨時切換至 **「🤖 AI預測模擬」** 頁籤，利用動態迴歸斜率，確保新品定價踩在「消費者預期性性價比」的黃金交叉點。
+                    4.  **定價動態回測**：在每一次新品研發或配方調整前，請隨時切換至 **「🤖 AI預測模擬」** 頁籤，利用動態迴歸斜率，確保新品定價踩在「消費者預期性價比」的黃金交叉點。
                     """)
         else:
             st.warning("⚠️ 當前篩選條件下無足夠數據，AI 無法生成戰略報告。")
 
     # ==========================================
-    # 🔥 全新擴充：頁籤 10 - 藍海新品研發實驗室
+    # 🔥 全新擴充：頁籤 10 - 藍海新品研發實驗室 (含繪圖防呆修復)
     # ==========================================
     with tab10:
         st.markdown("### 🧪 藍海新品研發與智慧定價實驗室 (Menu R&D Lab)")
@@ -717,8 +731,15 @@ if not df.empty:
         if not gap_analysis.empty:
             max_p = gap_analysis['均價'].max() if gap_analysis['均價'].max() > 0 else 1
             max_c = gap_analysis['品項數'].max() if gap_analysis['品項數'].max() > 0 else 1
+            
             # 藍海指數公式：均價越高分數越高(佔60%) + 現有競品越少分數越高(佔40%)
             gap_analysis['藍海指數'] = ((gap_analysis['均價'] / max_p) * 60 + (1 - gap_analysis['品項數'] / max_c) * 40).round(1)
+            
+            # === 核心防呆修復：安全清洗「藍海指數」欄位，防止 Plotly 畫圖崩潰 ===
+            gap_analysis['藍海指數'] = gap_analysis['藍海指數'].replace([np.inf, -np.inf], 0) # 清除無限大
+            gap_analysis['藍海指數'] = gap_analysis['藍海指數'].fillna(0) # 清除空值
+            gap_analysis['藍海指數'] = gap_analysis['藍海指數'].clip(lower=0) # 強制最小為 0
+            
             gap_analysis = gap_analysis.sort_values(by='藍海指數', ascending=False).reset_index(drop=True)
             
             rd_c1, rd_c2 = st.columns([1, 1.2])
