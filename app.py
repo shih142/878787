@@ -716,7 +716,7 @@ if not df.empty:
             st.warning("⚠️ 當前篩選條件下無足夠數據，AI 無法生成戰略報告。")
 
     # ==========================================
-    # 🔥 全新擴充：頁籤 10 - 藍海新品研發實驗室 (含繪圖防呆修復)
+    # 🔥 頁籤 10 - 藍海新品研發實驗室 (已更新為 3D 藍海星系版)
     # ==========================================
     with tab10:
         st.markdown("### 🧪 藍海新品研發與智慧定價實驗室 (Menu R&D Lab)")
@@ -753,12 +753,35 @@ if not df.empty:
                     </div>
                     """, unsafe_allow_html=True)
                 
-                st.markdown("#### 📊 全品類市場供需與溢價分佈")
-                fig_gap = px.scatter(gap_analysis, x='品項數', y='均價', size='藍海指數', color='標籤1', text='標籤1',
-                                     hover_data={'藍海指數': True, '品項數': True, '均價': ':.1f'}, color_discrete_sequence=px.colors.qualitative.Dark24)
+                st.markdown("#### 📊 全品類市場供需與溢價分佈 (3D 藍海星系)")
+                
+                # ===== 升級 3D 視覺化圖表 =====
+                fig_gap = px.scatter_3d(
+                    gap_analysis, 
+                    x='品項數', 
+                    y='均價', 
+                    z='藍海指數',
+                    size='藍海指數', 
+                    color='標籤1', 
+                    text='標籤1',
+                    hover_data={'藍海指數': ':.1f', '品項數': True, '均價': ':.1f'}, 
+                    color_discrete_sequence=px.colors.qualitative.Dark24
+                )
                 fig_gap.update_traces(textposition='top center', marker=dict(opacity=0.85, line=dict(width=1, color='white')))
-                fig_gap.update_layout(xaxis_title="市場競爭度 (現有商品總數)", yaxis_title="定價天花板 (大杯平均價格)")
-                st.plotly_chart(apply_common_layout(fig_gap), use_container_width=True)
+                fig_gap.update_layout(
+                    scene=dict(
+                        xaxis_title="市場競爭度 (商品總數)", 
+                        yaxis_title="定價天花板 (大杯均價)",
+                        zaxis_title="藍海潛力指數",
+                        camera=dict(eye=dict(x=1.3, y=1.3, z=0.8)) # 預設合適的 3D 視角
+                    ),
+                    height=550,
+                    margin=dict(l=0, r=0, b=0, t=30),
+                    showlegend=False
+                )
+                
+                # 這裡不套用 apply_common_layout 以避免覆蓋到 3D scene 的背景設定
+                st.plotly_chart(fig_gap, use_container_width=True)
                 
             with rd_c2:
                 st.markdown("#### 💡 智慧新品研發模擬與定價大腦")
