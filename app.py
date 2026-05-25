@@ -598,7 +598,74 @@ if not df.empty:
                 st.dataframe(detail_df, use_container_width=True)
         else:
             st.error("🚨 嚴重錯誤：經過防呆清洗後依然無法產生資料，請檢查 Excel 中的『價格(L)』欄位是否全部為空值或非數字。")
+        # ------------------------------------------
+    # 頁籤 9：AI 全能商業戰略總結報告
+    # ------------------------------------------
+    with tab9:
+        st.markdown("### 📝 AI 全能商業戰略總結報告 (Executive Summary)")
+        st.caption("自動融合全站大數據矩陣，動態生成的頂層戰略洞察與決策建議。")
+        
+        with st.spinner("🧠 AI 大腦正在深度運算全域矩陣..."):
+            # 1. 提取全域關鍵數據
+            total_brands = filtered_df['店家'].nunique()
+            total_items = len(filtered_df)
+            global_avg_price = filtered_df['價格(L)'].mean()
+            
+            # 品牌均價與品項數統計
+            brand_summary = filtered_df.groupby('店家').agg(
+                均價=('價格(L)', 'mean'),
+                品項數=('飲料品項', 'count'),
+                加料數=('加料', 'sum')
+            ).reset_index()
+            
+            # 2. 找出極值與戰略定位品牌
+            if not brand_summary.empty and total_brands > 0:
+                highest_price_brand = brand_summary.loc[brand_summary['均價'].idxmax()]
+                lowest_price_brand = brand_summary.loc[brand_summary['均價'].idxmin()]
+                most_items_brand = brand_summary.loc[brand_summary['品項數'].idxmax()]
+                
+                brand_summary['加料佔比'] = brand_summary['加料數'] / brand_summary['品項數']
+                highest_topping_brand = brand_summary.loc[brand_summary['加料佔比'].idxmax()]
+                
+                # 3. 動態生成報告文本
+                report_html = f"""
+                <div style="background-color: #F8FAFC; padding: 30px; border-radius: 15px; border-left: 6px solid #4F46E5; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+                    <h3 style="color: #1E293B; margin-top: 0;">一、 大盤市場掃描 (Market Overview)</h3>
+                    <p style="font-size: 16px; color: #334155; line-height: 1.6;">
+                        本次分析共涵蓋 <b>{total_brands}</b> 個手搖飲品牌，總計提取 <b>{total_items}</b> 項有效商品數據。
+                        目前市場大杯均價落在 <b>${global_avg_price:.1f}</b> 元。
+                    </p>
+                    
+                    <hr style="border-top: 1px solid #E2E8F0; margin: 20px 0;">
+                    
+                    <h3 style="color: #1E293B;">二、 品牌定價戰略光譜 (Pricing Strategy)</h3>
+                    <ul style="font-size: 16px; color: #334155; line-height: 1.8;">
+                        <li><b>👑 頂級溢價指標：</b> <b>{highest_price_brand['店家']}</b> 以平均單價 <b>${highest_price_brand['均價']:.1f}</b> 居冠。該品牌主攻高客單價、高質感的利基市場，需持續強化品牌信仰與特殊物料（如鮮乳、鮮果）的故事性。</li>
+                        <li><b>🛡️ 平價防禦壁壘：</b> <b>{lowest_price_brand['店家']}</b> 的平均單價僅 <b>${lowest_price_brand['均價']:.1f}</b>，具備最強的價格破壞力，適合在校區或高密度商辦區以「高流速、大杯量」的量販模式搶佔市佔率。</li>
+                    </ul>
 
+                    <hr style="border-top: 1px solid #E2E8F0; margin: 20px 0;">
+
+                    <h3 style="color: #1E293B;">三、 產品線佈局與加料經濟 (Product & Topping Economics)</h3>
+                    <ul style="font-size: 16px; color: #334155; line-height: 1.8;">
+                        <li><b>📋 菜單海王：</b> <b>{most_items_brand['店家']}</b> 擁有 <b>{most_items_brand['品項數']}</b> 個品項，提供消費者最多元的選擇。建議針對長尾冷門品項進行汰弱留強，以降低原物料耗損與倉儲成本。</li>
+                        <li><b>🍬 咀嚼系霸主：</b> <b>{highest_topping_brand['店家']}</b> 的加料品項佔比高達 <b>{highest_topping_brand['加料佔比']*100:.1f}%</b>。在手搖飲紅海中，該品牌成功利用「配料多樣性」作為營收放大器，有效拉高單杯毛利。</li>
+                    </ul>
+                </div>
+                """
+                st.markdown(report_html, unsafe_allow_html=True)
+                
+                # 4. AI 戰略決策建議 (Expander)
+                st.markdown("<br>", unsafe_allow_html=True)
+                st.markdown("#### 💡 AI 經營戰略處方籤 (Strategic Recommendations)")
+                
+                c1, c2 = st.columns(2)
+                with c1:
+                    st.info("**📈 針對高單價品牌的建議**\n\n若您的均價高於市場行情 ($" + f"{global_avg_price:.0f}" + ")，消費者對『超值感』的要求會更嚴苛。建議將行銷資源集中在『工藝複雜度』(如現打冰沙) 或『頂級物料』(如在地小農鮮乳)，將價格落差轉化為品質保證。")
+                with c2:
+                    st.success("**🎯 針對平價品牌的建議**\n\n若您的均價低於市場行情，可善用『加料經濟學』。推出多種銅板價配料（如 +10元 雙Q），在不驚動基礎茶底定價的情況下，無痛提升總體客單價。")
+            else:
+                st.warning("⚠️ 數據量不足以生成 AI 戰略報告，請放寬側邊欄的篩選條件。")
 else:
     # 全域資料抓取失敗或為空時
     st.stop()
