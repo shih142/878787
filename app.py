@@ -605,51 +605,52 @@ if not df.empty:
                 top_base_pct = (filtered_df['標籤1'] == top_base).sum() / total_items * 100 if total_items > 0 else 0
                 
                 # ==========================================
-                 # 🔥 升級版 AI 分析引擎：雙維度戰略矩陣 (價格水位 x 產品結構)
-            # ==========================================
-            # 判斷維度 1：市場定價水位 (Price Level)
-            if global_avg_price >= 70:
-                price_tier = "premium"
-                market_type = "💎 頂尖客單奢華型藍海"
-            elif global_avg_price >= 55:
-                price_tier = "mid-high"
-                market_type = "⚖️ 白領輕奢精緻戰場"
-            elif global_avg_price >= 40:
-                price_tier = "mass"
-                market_type = "🔥 主流中產高頻剛需區"
-            else:
-                price_tier = "budget"
-                market_type = "🥊 價格破壞型下沉紅海"
-
-            # 判斷維度 2：加料變現依賴度 (Topping Dependency)
-            if topping_pct >= 45:
-                product_strategy = "高度甜品化，極度依賴咀嚼系配料（如白玉、奶蓋、寒天）來拉高客單價與飽足感。"
-                topping_type = "heavy"
-            elif topping_pct >= 25:
-                product_strategy = "黃金配料比例，純茶與加料雙引擎並重，菜單結構均衡。"
-                topping_type = "balanced"
-            else:
-                product_strategy = "極致純淨，主打茶湯底蘊與原物料本質，刻意降低吧台出杯工序。"
-                topping_type = "light"
-
-            # 綜合生成 Strategic Focus (戰略方針)
-            if price_tier == "premium":
-                if topping_type == "heavy":
-                    strategic_focus = f"【奢華甜品化】{product_strategy} 建議強化配料的『稀缺性』（如法式慕斯、季節限定鮮果），透過高顏值視覺包裝創造 IG 傳播效應，此客群對價格極不敏感，賣的是犒賞感。"
+                # 🔥 升級版 AI 分析引擎：雙維度戰略矩陣 (價格水位 x 產品結構)
+                # ==========================================
+                # 判斷維度 1：市場定價水位 (Price Level)
+                if global_avg_price >= 70:
+                    price_tier = "premium"
+                    market_type = "💎 頂尖客單奢華型藍海"
+                elif global_avg_price >= 55:
+                    price_tier = "mid-high"
+                    market_type = "⚖️ 白領輕奢精緻戰場"
+                elif global_avg_price >= 40:
+                    price_tier = "mass"
+                    market_type = "🔥 主流中產高頻剛需區"
                 else:
-                    strategic_focus = f"【職人工藝茶】{product_strategy} 行銷應極致放大『單一產區、契作茶園、職人手沖』等故事性。捨棄花俏配料，以純粹的品茶文化建立堅不可摧的品牌信仰。"
-            
-            elif price_tier == "mid-high":
-                if topping_type == "heavy" or topping_type == "balanced":
-                    strategic_focus = f"【微創新突圍】此區間為兵家必爭之地。{product_strategy} 建議透過研發『特色帶路雞』（如獨家口味茶凍、新創基底茶）打破定價僵局，創造競品無法輕易複製的記憶點。"
+                    price_tier = "budget"
+                    market_type = "🥊 價格破壞型下沉紅海"
+
+                # 判斷維度 2：加料變現依賴度 (Topping Dependency)
+                if topping_pct >= 45:
+                    product_strategy = "高度甜品化，極度依賴咀嚼系配料（如白玉、奶蓋、寒天）來拉高客單價與飽足感。"
+                    topping_type = "heavy"
+                elif topping_pct >= 25:
+                    product_strategy = "黃金配料比例，純茶與加料雙引擎並重，菜單結構均衡。"
+                    topping_type = "balanced"
                 else:
-                    strategic_focus = f"【輕負擔精緻飲】{product_strategy} 鎖定注重健康的都會白領，建議行銷主打『低卡、無糖也順口、小農契作』，拉開與大眾市場的質感差距。"
-            
-            elif price_tier == "mass":
-                strategic_focus = f"【規模化防禦】{product_strategy} 核心重點在於『高轉化率與出杯流速』。必須嚴控供應鏈成本，透過數位化點單、會員寄杯點數機制，死死綁定區域型消費者的日常復購習慣。"
-            
-            else:
-                strategic_focus = f"【極致效率戰】{product_strategy} 生存法則唯有『規模經濟與極致成本控制』。應大刀闊斧刪減低周轉品項，菜單聚焦於爆款純茶與少數暢銷配料，以連鎖量販模式搶佔市佔率。"
+                    product_strategy = "極致純淨，主打茶湯底蘊與原物料本質，刻意降低吧台出杯工序。"
+                    topping_type = "light"
+
+                # 綜合生成 Strategic Focus (戰略方針)
+                if price_tier == "premium":
+                    if topping_type == "heavy":
+                        strategic_focus = f"【奢華甜品化】{product_strategy} 建議強化配料的『稀缺性』（如法式慕斯、季節限定鮮果），透過高顏值視覺包裝創造 IG 傳播效應，此客群對價格極不敏感，賣的是犒賞感。"
+                    else:
+                        strategic_focus = f"【職人工藝茶】{product_strategy} 行銷應極致放大『單一產區、契作茶園、職人手沖』等故事性。捨棄花俏配料，以純粹的品茶文化建立堅不可摧的品牌信仰。"
+                
+                elif price_tier == "mid-high":
+                    if topping_type == "heavy" or topping_type == "balanced":
+                        strategic_focus = f"【微創新突圍】此區間為兵家必爭之地。{product_strategy} 建議透過研發『特色帶路雞』（如獨家口味茶凍、新創基底茶）打破定價僵局，創造競品無法輕易複製的記憶點。"
+                    else:
+                        strategic_focus = f"【輕負擔精緻飲】{product_strategy} 鎖定注重健康的都會白領，建議行銷主打『低卡、無糖也順口、小農契作』，拉開與大眾市場的質感差距。"
+                
+                elif price_tier == "mass":
+                    strategic_focus = f"【規模化防禦】{product_strategy} 核心重點在於『高轉化率與出杯流速』。必須嚴控供應鏈成本，透過數位化點單、會員寄杯點數機制，死死綁定區域型消費者的日常復購習慣。"
+                
+                else:
+                    strategic_focus = f"【極致效率戰】{product_strategy} 生存法則唯有『規模經濟與極致成本控制』。應大刀闊斧刪減低周轉品項，菜單聚焦於爆款純茶與少數暢銷配料，以連鎖量販模式搶佔市佔率。"
+                    
                 # 3. 頂層視覺看板渲染
                 st.markdown(f"""
                 <div style="background: linear-gradient(135deg, #1E1B4B 0%, #311042 100%); color: #F8FAFC; padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px;">
