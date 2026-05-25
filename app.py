@@ -423,22 +423,54 @@ if not df.empty:
             st.warning("⚠️ 此篩選條件下的中/大杯雙重數據不足，無法啟動 AI 預測引擎。")
 
     # ------------------------------------------
-    # 頁籤 7：預期心理分析 (究極動態矩陣權重版)
+    # 頁籤 7：預期心理分析 (究極動態矩陣權重版 - 增強防呆與自動診斷)
     # ------------------------------------------
     with tab7:
         st.markdown("### 🧠 究極矩陣式預期心理分析 (Matrix-Weighted CP Index)")
-        st.caption("導入 MCDA 演算法，依據品項的「物料成本」、「工藝複雜度」與「品牌招牌光環」進行動態權重校正，還原最真實的消費者體感 CP 值。")
+        st.caption("導入 MCDA 演算法，依據品項的「物料成本」、「工藝複雜度」與「品牌招牌光環」進行動態權重校正。")
         
-        # 1. 基礎數據合併
+        # --- 🔍 核心防呆與資料清洗 ---
+        diagnostic_df = filtered_df.copy()
+        
+        # 防呆 1：如果 Excel 中的 '加料狀態' 因為對應失敗變成空值，自動補上預設值
+        if '加料狀態' in diagnostic_df.columns:
+            diagnostic_df['加料狀態'] = diagnostic_df['加料狀態'].fillna('純茶/無加料')
+        else:
+            diagnostic_df['加料狀態'] = '純茶/無加料'
+            
+        # 防呆 2：確保價格(L)為空值的品項不會進入計算
+        diagnostic_df = diagnostic_df.dropna(subset=['價格(L)'])
+        
+        # --- 📊 執行資料合併 ---
         psych_df = pd.merge(
-            filtered_df, 
+            diagnostic_df, 
             market_expectation, 
             on=['標籤1', '加料狀態'], 
             how='left'
-        ).dropna(subset=['價格(L)', '市場預期價'])
+        )
         
-        if not psych_df.empty:
-            # 2. 核心權重演算法 (動態調整行情價)
+        # 防呆 3：如果某些冷門標籤算不出市場預期價，自動用全域大杯均價補位，避免被 dropna 刪除
+        global_l_mean = df['價格(L)'].mean() if not df.empty else 50
+        psych_df['市場預期價'] = psych_df['市場預期價'].fillna(global_l_mean)
+
+        # --- 🛠️ 後台資料診斷追蹤器 (Expander) ---
+        with st.expander("🔍 數據庫健康狀態診斷報告 (排錯專用)", expanded=False):
+            st.markdown("##### 🩺 資料流失節點追蹤：")
+            st.write(f"1. 經側邊欄篩選後，有效大杯商品數：`{len(diagnostic_df)}` 項")
+            st.write(f"2. 成功與市場大盤行情配對商品數：`{len(psych_df)}` 項")
+            
+            # 檢查是否有無效分類
+            nan_market_count = psych_df['市場預期價'].isna().sum()
+            if nan_market_count > 0:
+                st.error(f"⚠️ 警告：有 {nan_market_count} 個品項的『標籤1』在全大盤中找不到對應的平均價！")
+            else:
+                st.success("✅ 欄位配對檢查：所有品項皆已成功取得市場基準價。")
+                
+            st.markdown("##### 📋 當前傳入模型的前 3 筆檢視數據：")
+            st.dataframe(psych_df[['店家', '飲料品項', '標籤1', '加料狀態', '價格(L)', '市場預期價']].head(3), use_container_width=True)
+
+        # --- 🧠 核心權重演算法開始 ---
+        if not psych_df.empty and len(psych_df) > 0:
             def calculate_matrix_weighted_cp(row):
                 item_name = str(row['飲料品項'])
                 base_expectation = row['市場預期價']
@@ -446,20 +478,19 @@ if not df.empty:
                 W_m, W_b, W_c = 0.0, 0.0, 0.0
                 
                 # [維度一：物料權重 (Material)]
-                if any(k in item_name for k in ['鮮奶', '拿鐵', '歐蕾', '芝士', '奶蓋', '厚乳']):
-                    W_m = 0.18  # 高成本乳製品
-                elif any(k in item_name for k in ['鮮果', '葡萄', '草莓', '芒果', '蘋果', '檸檬', '百香']):
-                    W_m = 0.15  # 高耗損鮮果類
+                if any(k in item_name for k in ['鮮奶', '拿鐵', '歐蕾', '芝士', '奶蓋', '厚乳', '重乳']):
+                    W_m = 0.18
+                elif any(k in item_name for k in ['鮮果', '葡萄', '草莓', '芒果', '蘋果', '檸檬', '百香', '雷夢']):
+                    W_m = 0.15
                     
                 # [維度二：工藝權重 (Craft)]
-                if any(k in item_name for k in ['冰沙', '特調', '現打', '雙Q', '三兄弟', '多肉']):
-                    W_c = 0.08  # 複雜製程或多配料
+                if any(k in item_name for k in ['冰沙', '特調', '現打', '雙Q', '三兄弟', '多肉', '白玉']):
+                    W_c = 0.08
                     
                 # [維度三：招牌/情感權重 (Brand)]
-                if any(k in item_name for k in ['招牌', '經典', '得獎', '極品', '首創', '特選']):
-                    W_b = 0.05  # 明星品項容忍度溢價
+                if any(k in item_name for k in ['招牌', '經典', '得獎', '極品', '首創', '特選', '莊園', '丘森']):
+                    W_b = 0.05
                     
-                # 計算最終合理預期價
                 total_factor = 1.0 + W_m + W_b + W_c
                 return base_expectation * total_factor
 
@@ -467,9 +498,8 @@ if not df.empty:
             psych_df['調整後預期價'] = psych_df.apply(calculate_matrix_weighted_cp, axis=1)
             psych_df['真實價格落差'] = psych_df['價格(L)'] - psych_df['調整後預期價']
             
-            # 3. 嚴格定義動態權重下的消費者體感分類 (利用標準差動態劃分區間)
+            # 利用標準差動態劃分區間
             std_gap = psych_df['真實價格落差'].std()
-            # 設立安全邊界防呆，避免標準差為 0
             threshold = max(std_gap * 0.8, 3.5) if pd.notna(std_gap) else 4.0 
             
             def categorize_psych_matrix(gap):
@@ -482,10 +512,10 @@ if not df.empty:
                 
             psych_df['消費者體感'] = psych_df['真實價格落差'].apply(categorize_psych_matrix)
             
-            # 4. 頂部 KPI 數據觀測站
+            # 頂部 KPI 數據觀測站
             total_items = len(psych_df)
-            premium_pct = (psych_df['消費者體感'] == "💸 品牌溢價 (主打高質感)").sum() / total_items * 100 if total_items > 0 else 0
-            value_pct = (psych_df['消費者體感'] == "🤑 體感超值 (利潤回饋)").sum() / total_items * 100 if total_items > 0 else 0
+            premium_pct = (psych_df['消費者體感'] == "💸 品牌溢價 (主打高質感)").sum() / total_items * 100
+            value_pct = (psych_df['消費者體感'] == "🤑 體感超值 (利潤回饋)").sum() / total_items * 100
             normal_pct = 100 - premium_pct - value_pct
             
             p_c1, p_c2, p_c3 = st.columns(3)
@@ -495,9 +525,8 @@ if not df.empty:
             
             st.divider()
             
-            # 5. 數據總表彙整與進化版 CP 值公式
+            # 品牌動態加權 CP 值轉換總表
             st.markdown("#### 📋 品牌動態加權 CP 值轉換總表")
-            
             psych_summary = psych_df.groupby('店家').agg(
                 高質感品項數=('消費者體感', lambda x: (x == "💸 品牌溢價 (主打高質感)").sum()),
                 符合預期數=('消費者體感', lambda x: (x == "😐 符合預期 (市場行情)").sum()),
@@ -506,12 +535,9 @@ if not df.empty:
             ).reset_index()
             
             psych_summary['總品項數'] = psych_summary['高質感品項數'] + psych_summary['符合預期數'] + psych_summary['超值品項數']
-            
-            # 綜合 CP 值指數演算法（基礎 60 分，對非線性落差進行平滑處理）
             psych_summary['綜合 CP 值指數'] = (60 - (psych_summary['平均真實落差'] * 3.5)).clip(0, 100).round(1)
             psych_summary['校正後平均落差'] = psych_summary['平均真實落差'].apply(lambda x: f"{x:+.1f} 元")
             
-            # 排序與顯示
             psych_summary = psych_summary.sort_values(by='綜合 CP 值指數', ascending=False).reset_index(drop=True)
             psych_summary.index += 1
             
@@ -522,9 +548,8 @@ if not df.empty:
             
             st.divider()
             
-            # 6. 雙核心視覺化圖表生成
+            # 圖表生成
             chart_col1, chart_col2 = st.columns(2)
-            
             with chart_col1:
                 st.markdown("#### 📊 品牌消費者體感結構分佈")
                 psych_count = psych_df.groupby(['店家', '消費者體感']).size().reset_index(name='數量')
@@ -550,24 +575,20 @@ if not df.empty:
                         "💸 品牌溢價 (主打高質感)": "#6366F1", 
                         "😐 符合預期 (市場行情)": "#94A3B8", 
                         "🤑 體感超值 (利潤回饋)": "#10B981"
-                    }, 
-                    opacity=0.85
+                    }, opacity=0.85
                 )
                 fig_psych_scatter.update_traces(marker=dict(size=12, line=dict(width=1.5, color='white')))
                 
-                # 繪製 45 度對角絕對平衡線
                 min_val = min(psych_df["調整後預期價"].min(), psych_df["價格(L)"].min())
                 max_val = max(psych_df["調整後預期價"].max(), psych_df["價格(L)"].max())
                 fig_psych_scatter.add_shape(
                     type="line", x0=min_val, y0=min_val, x1=max_val, y1=max_val, 
                     line=dict(color="rgba(15, 23, 42, 0.5)", dash="dash", width=1.5)
                 )
-                
                 fig_psych_scatter.update_layout(xaxis_title="動態權重校正行情 (元)", yaxis_title="實際大杯售價 (元)")
                 fig_psych_scatter = apply_common_layout(fig_psych_scatter)
                 st.plotly_chart(fig_psych_scatter, use_container_width=True)
                 
-            # 展開查看精細落差數據表
             with st.expander("📋 展開查看 AI 權重判定與落差明細表"):
                 detail_df = psych_df[['店家', '飲料品項', '標籤1', '市場預期價', '調整後預期價', '價格(L)', '真實價格落差', '消費者體感']].copy()
                 detail_df['市場預期價'] = detail_df['市場預期價'].round(1)
@@ -575,17 +596,8 @@ if not df.empty:
                 detail_df['真實價格落差'] = detail_df['真實價格落差'].round(1).apply(lambda x: f"{x:+.1f}")
                 detail_df = detail_df.sort_values(by='價格(L)', ascending=False).reset_index(drop=True)
                 st.dataframe(detail_df, use_container_width=True)
-                
         else:
-            st.warning("⚠️ 當前篩選條件下數據不足，無法生成矩陣權重 CP 值分析報告。請放寬側邊欄條件。")
-    # ------------------------------------------
-    # 頁籤 8：原始資料
-    # ------------------------------------------
-    with tab8:
-        st.markdown("### 📋 篩選結果明細與匯出")
-        st.dataframe(filtered_df, use_container_width=True, height=500)
-        csv = filtered_df.to_csv(index=False).encode('utf-8-sig')
-        st.download_button(label="📥 匯出當前視角資料 (CSV)", data=csv, file_name='beverages_ultimate.csv', mime='text/csv')
+            st.error("🚨 嚴重錯誤：經過防呆清洗後依然無法產生資料，請檢查 Excel 中的『價格(L)』欄位是否全部為空值或非數字。")
 
 else:
     # 全域資料抓取失敗或為空時
