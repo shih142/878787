@@ -605,7 +605,7 @@ if not df.empty:
                 top_base_pct = (filtered_df['標籤1'] == top_base).sum() / total_items * 100 if total_items > 0 else 0
                 
                 # ==========================================
-            # 🔥 升級版 AI 分析引擎：雙維度戰略矩陣 (價格水位 x 產品結構)
+                 # 🔥 升級版 AI 分析引擎：雙維度戰略矩陣 (價格水位 x 產品結構)
             # ==========================================
             # 判斷維度 1：市場定價水位 (Price Level)
             if global_avg_price >= 70:
