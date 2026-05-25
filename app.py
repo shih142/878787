@@ -85,7 +85,7 @@ if not df.empty:
     with st.sidebar:
         st.image("https://cdn-icons-png.flaticon.com/512/3081/3081162.png", width=90)
         st.header("🎛️ 究極控制台")
-        st.caption("連動全站 8 大模組與 AI 大腦")
+        st.caption("連動全站 11 大模組與 AI 大腦")
         
         selected_stores = st.multiselect("🏪 選擇分析品牌", options=all_stores, default=all_stores[:7] if len(all_stores)>=7 else all_stores)
         all_bases = df['標籤1'].dropna().unique().tolist()
@@ -116,11 +116,12 @@ if not df.empty:
         st.stop()
 
     # ==========================================
-    # 4. 建立 9 大究極功能頁籤
+    # 4. 建立 11 大究極功能頁籤
     # ==========================================
-    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9 = st.tabs([
+    tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
         "📊 戰情總覽與洞察", "🌌 3D星系版圖", "⚔️ 品牌死鬥 PK", "📈 定價與加料", 
-        "🔄 樞紐熱力圖", "🤖 AI預測模擬", "🧠 CP值分析", "📋 原始數據", "📝 AI全能報告"
+        "🔄 樞紐熱力圖", "🤖 AI預測模擬", "🧠 CP值分析", "📋 原始數據", "📝 AI全能報告",
+        "🧪 藍海新品研發", "💰 財務損益推演"
     ])
     
     # ------------------------------------------
@@ -504,7 +505,7 @@ if not df.empty:
             
             st.divider()
             
-            st.markdown("#### 📋 品牌動態加權 CP 值轉換總表")
+            st.markdown("#### 📋 品牌動態加權 CP值轉換總表")
             psych_summary = psych_df.groupby('店家').agg(
                 高質感品項數=('消費者體感', lambda x: (x == "💸 品牌溢價 (主打高質感)").sum()),
                 符合預期數=('消費者體感', lambda x: (x == "😐 符合預期 (市場行情)").sum()),
@@ -581,7 +582,7 @@ if not df.empty:
         st.dataframe(filtered_df, use_container_width=True)
 
     # ------------------------------------------
-    # 頁籤 9：AI 全能商業戰略總結報告 (優化重製究極版)
+    # 頁籤 9：AI 全能商業戰略總結報告
     # ------------------------------------------
     with tab9:
         st.markdown("### 📝 AI 全能商業戰略總結報告 (Executive Summary)")
@@ -589,7 +590,6 @@ if not df.empty:
         
         if not filtered_df.empty and filtered_df['店家'].nunique() > 0:
             with st.spinner("🧠 AI 大腦正在深度運算全域矩陣..."):
-                # 1. 基礎指標提取
                 total_brands = filtered_df['店家'].nunique()
                 total_items = len(filtered_df)
                 global_avg_price = filtered_df['價格(L)'].mean()
@@ -600,14 +600,9 @@ if not df.empty:
                     加料數=('加料', 'sum')
                 ).reset_index()
                 
-                # 2. 進階矩陣計算
                 top_base = filtered_df['標籤1'].value_counts().idxmax() if '標籤1' in filtered_df.columns and not filtered_df['標籤1'].empty else "未分類"
                 top_base_pct = (filtered_df['標籤1'] == top_base).sum() / total_items * 100 if total_items > 0 else 0
                 
-                # ==========================================
-                # 🔥 升級版 AI 分析引擎：雙維度戰略矩陣 (價格水位 x 產品結構)
-                # ==========================================
-                # 判斷維度 1：市場定價水位 (Price Level)
                 if global_avg_price >= 70:
                     price_tier = "premium"
                     market_type = "💎 頂尖客單奢華型藍海"
@@ -621,7 +616,6 @@ if not df.empty:
                     price_tier = "budget"
                     market_type = "🥊 價格破壞型下沉紅海"
 
-                # 判斷維度 2：加料變現依賴度 (Topping Dependency)
                 if topping_pct >= 45:
                     product_strategy = "高度甜品化，極度依賴咀嚼系配料（如白玉、奶蓋、寒天）來拉高客單價與飽足感。"
                     topping_type = "heavy"
@@ -632,26 +626,21 @@ if not df.empty:
                     product_strategy = "極致純淨，主打茶湯底蘊與原物料本質，刻意降低吧台出杯工序。"
                     topping_type = "light"
 
-                # 綜合生成 Strategic Focus (戰略方針)
                 if price_tier == "premium":
                     if topping_type == "heavy":
                         strategic_focus = f"【奢華甜品化】{product_strategy} 建議強化配料的『稀缺性』（如法式慕斯、季節限定鮮果），透過高顏值視覺包裝創造 IG 傳播效應，此客群對價格極不敏感，賣的是犒賞感。"
                     else:
                         strategic_focus = f"【職人工藝茶】{product_strategy} 行銷應極致放大『單一產區、契作茶園、職人手沖』等故事性。捨棄花俏配料，以純粹的品茶文化建立堅不可摧的品牌信仰。"
-                
                 elif price_tier == "mid-high":
                     if topping_type == "heavy" or topping_type == "balanced":
                         strategic_focus = f"【微創新突圍】此區間為兵家必爭之地。{product_strategy} 建議透過研發『特色帶路雞』（如獨家口味茶凍、新創基底茶）打破定價僵局，創造競品無法輕易複製的記憶點。"
                     else:
                         strategic_focus = f"【輕負擔精緻飲】{product_strategy} 鎖定注重健康的都會白領，建議行銷主打『低卡、無糖也順口、小農契作』，拉開與大眾市場的質感差距。"
-                
                 elif price_tier == "mass":
                     strategic_focus = f"【規模化防禦】{product_strategy} 核心重點在於『高轉化率與出杯流速』。必須嚴控供應鏈成本，透過數位化點單、會員寄杯點數機制，死死綁定區域型消費者的日常復購習慣。"
-                
                 else:
                     strategic_focus = f"【極致效率戰】{product_strategy} 生存法則唯有『規模經濟與極致成本控制』。應大刀闊斧刪減低周轉品項，菜單聚焦於爆款純茶與少數暢銷配料，以連鎖量販模式搶佔市佔率。"
                     
-                # 3. 頂層視覺看板渲染
                 st.markdown(f"""
                 <div style="background: linear-gradient(135deg, #1E1B4B 0%, #311042 100%); color: #F8FAFC; padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px;">
                     <h3 style="color: #A5B4FC; margin-top: 0; font-weight: 900; letter-spacing: 1px;">🔮 戰情官決策大腦：戰略白皮書</h3>
@@ -674,7 +663,6 @@ if not df.empty:
                 </div>
                 """, unsafe_allow_html=True)
                 
-                # 4. 戰略三大支柱剖析
                 col_strat1, col_strat2 = st.columns(2)
                 with col_strat1:
                     st.markdown("#### 🎯 支柱一：定價與菜單工程 (Menu Engineering)")
@@ -708,7 +696,151 @@ if not df.empty:
                     1.  **市場定位診斷**：目前市場定位屬於 **{market_type}**，核心戰略為：*{strategic_focus}*。
                     2.  **向標竿看齊 (高價溢價)**：參考當前均價最高昂的品牌 **{leader_brand}** 的定價與視覺呈現，檢視自身的產品故事包裝，是否具備支撐高客單價的「情感溢價價值」。
                     3.  **菜單工程斷捨離 (降低內耗)**：目前品項數最多的品牌為 **{volume_brand}**。對於中小型新創品牌，品項過多將導致供應鏈臃腫與原料耗損。強烈建議實施『菜單精簡化』，將品項限縮在 30 款核心爆款內，聚焦出杯效率。
-                    4.  **定價動態回測**：在每一次新品研發或配方調整前，請隨時切換至 **「🤖 AI預測模擬」** 頁籤，利用動態迴歸斜率，確保新品定價踩在「消費者預期性價比」的黃金交叉點。
+                    4.  **定價動態回測**：在每一次新品研發或配方調整前，請隨時切換至 **「🤖 AI預測模擬」** 頁籤，利用動態迴歸斜率，確保新品定價踩在「消費者預期性性價比」的黃金交叉點。
                     """)
         else:
             st.warning("⚠️ 當前篩選條件下無足夠數據，AI 無法生成戰略報告。")
+
+    # ==========================================
+    # 🔥 全新擴充：頁籤 10 - 藍海新品研發實驗室
+    # ==========================================
+    with tab10:
+        st.markdown("### 🧪 藍海新品研發與智慧定價實驗室 (Menu R&D Lab)")
+        st.caption("自動探測市場中『競爭少、利潤高』的真空藍海賽道，並提供智慧化新品定價與 AI 行銷包裝指南。")
+        
+        # 1. 藍海真空矩陣算法
+        gap_analysis = df.groupby(['標籤1', '加料狀態']).agg(
+            均價=('價格(L)', 'mean'),
+            品項數=('飲料品項', 'count')
+        ).reset_index()
+        
+        if not gap_analysis.empty:
+            max_p = gap_analysis['均價'].max() if gap_analysis['均價'].max() > 0 else 1
+            max_c = gap_analysis['品項數'].max() if gap_analysis['品項數'].max() > 0 else 1
+            # 藍海指數公式：均價越高分數越高(佔60%) + 現有競品越少分數越高(佔40%)
+            gap_analysis['藍海指數'] = ((gap_analysis['均價'] / max_p) * 60 + (1 - gap_analysis['品項數'] / max_c) * 40).round(1)
+            gap_analysis = gap_analysis.sort_values(by='藍海指數', ascending=False).reset_index(drop=True)
+            
+            rd_c1, rd_c2 = st.columns([1, 1.2])
+            with rd_c1:
+                st.markdown("#### 🔭 當前全市場黃金藍海賽道 Top 3")
+                for idx, row in gap_analysis.head(3).iterrows():
+                    st.markdown(f"""
+                    <div style="background: rgba(99, 102, 241, 0.05); padding: 15px; border-radius: 12px; border-left: 5px solid #6366F1; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
+                        <span style="font-weight:900; color:#4F46E5; font-size:16px;">🏆 Top {idx+1}：{row['標籤1']} × {row['加料狀態']}</span><br>
+                        <span style="font-size:14px; color:#475569;">綜合藍海潛力: <b>{row['藍海指數']} 分</b> | 市場均價: <b>${row['均價']:.1f} 元</b> | 現有競品僅: <b>{row['品項數']} 款</b></span>
+                    </div>
+                    """, unsafe_allow_html=True)
+                
+                st.markdown("#### 📊 全品類市場供需與溢價分佈")
+                fig_gap = px.scatter(gap_analysis, x='品項數', y='均價', size='藍海指數', color='標籤1', text='標籤1',
+                                     hover_data={'藍海指數': True, '品項數': True, '均價': ':.1f'}, color_discrete_sequence=px.colors.qualitative.Dark24)
+                fig_gap.update_traces(textposition='top center', marker=dict(opacity=0.85, line=dict(width=1, color='white')))
+                fig_gap.update_layout(xaxis_title="市場競爭度 (現有商品總數)", yaxis_title="定價天花板 (大杯平均價格)")
+                st.plotly_chart(apply_common_layout(fig_gap), use_container_width=True)
+                
+            with rd_c2:
+                st.markdown("#### 💡 智慧新品研發模擬與定價大腦")
+                st.info("💡 選擇您研發中的新品屬性，AI 將根據大盤實體行情，給出精準的定價建議與情感價值包裝方案。")
+                
+                input_base = st.selectbox("1. 選擇預計研發的基底茶種", options=all_bases, index=0)
+                input_topping = st.selectbox("2. 設定該新品的配料狀態", options=["純茶/無加料", "有加料"], index=0)
+                input_tier = st.select_slider("3. 決定該產品的戰略定位", options=["大眾引流款 (低毛利/衝量款)", "市場主流款 (利潤與銷量平衡)", "奢華旗艦款 (高溢價/故事包裝)"], value="市場主流款 (利潤與銷量平衡)")
+                
+                # 智慧定價算法
+                base_match = gap_analysis[(gap_analysis['標籤1'] == input_base) & (gap_analysis['加料狀態'] == input_topping)]
+                base_calc_price = base_match['均價'].values[0] if not base_match.empty else df['價格(L)'].mean()
+                
+                tier_multiplier = {"大眾引流款 (低毛利/衝量款)": 0.85, "市場主流款 (利潤與銷量平衡)": 1.0, "奢華旗艦款 (高溢價/故事包裝)": 1.25}
+                rec_l_price = round((base_calc_price * tier_multiplier[input_tier]) / 5) * 5
+                rec_m_price = round((rec_l_price - 15) / 5) * 5
+                
+                st.markdown(f"""
+                <div style="background: linear-gradient(145deg, #1E293B, #0F172A); color: #F8FAFC; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-top: 4px solid #38BDF8;">
+                    <h5 style="color: #38BDF8; margin-top:0; font-weight:800; font-size:16px;">🤖 AI 新品定價與變現指南</h5>
+                    <div style="display:flex; justify-content: space-around; margin: 20px 0; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px;">
+                        <div style="text-align:center;"><span style="font-size:12px; color:#94A3B8;">建議中杯定價</span><br><b style="font-size:26px; color:#FBBF24;">${rec_m_price} 元</b></div>
+                        <div style="text-align:center;"><span style="font-size:12px; color:#94A3B8;">建議大杯定價</span><br><b style="font-size:26px; color:#34D399;">${rec_l_price} 元</b></div>
+                        <div style="text-align:center;"><span style="font-size:12px; color:#94A3B8;">爆款毛利潛力</span><br><b style="font-size:26px; color:#38BDF8;">{"極致高爆發" if input_tier=="奢華旗艦款 (高溢價/故事包裝)" else "穩健護城河" if input_tier=="市場主流款 (利潤與銷量平衡)" else "薄利多銷型"}</b></div>
+                    </div>
+                    <p style="font-size:14px; color:#CBD5E1; margin-bottom:6px;"><b>✨ AI 專屬行銷文案包裝指南：</b></p>
+                    <p style="font-size:13px; color:#94A3B8; line-height:1.7; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
+                    {"【職人奢華流】契作產地直送頂級 " + input_base + " 悉心淬鍊，融合黃金比例，完美封存最純粹的極致風韻。包裝建議採用高質感霧面冷調杯身，文案主打職人工藝與稀缺性，鎖定注重生活儀式感的都會輕奢客群，輕鬆打破價格防線。" if input_tier=="奢華旗艦款 (高溢價/故事包裝)" else "【每日必喝款】完美揉合大盤精髓，入口滑順、回甘悠長，是菜單上無可取代的靈魂支柱。建議配合辦公室下午茶進行促銷，建立高頻次、高復購率的日常品牌粘性。" if input_tier=="市場主流款 (利潤與銷量平衡)" else "【破局引流彈】以最具市場破壞力的極致價格切入，主打超高性價比與閃電出杯速度。作為門店『帶路雞』，可迅速吸引大批團購新客，並透過引導加點高毛利配料完成獲利二次轉化。"}
+                    </p>
+                </div>
+                """, unsafe_allow_html=True)
+        else:
+            st.warning("數據庫結構不完整，無法執行研發矩陣計算。")
+
+    # ==========================================
+    # 🔥 全新擴充：頁籤 11 - 財務損益推演
+    # ==========================================
+    with tab11:
+        st.markdown("### 💰 門店營運利潤與損益平衡推演 (Profit Simulator)")
+        st.caption("結合當前過濾市場的真實大杯價格水位，動態推演門店原物料成本（COGS）、固定開銷與單月保本營業防線。")
+        
+        # 提取當前篩選數據的大杯均價作為營收基準
+        market_avg_rev = filtered_df['價格(L)'].mean() if not filtered_df.empty and pd.notna(filtered_df['價格(L)'].mean()) else 60
+        
+        calc_c1, calc_c2 = st.columns([1, 1.5])
+        
+        with calc_c1:
+            st.markdown("#### ⚙️ 門店成本結構與開銷配置")
+            cogs_pct = st.slider("1. 原物料與包材成本佔比 (COGS %)", min_value=20, max_value=50, value=33, step=1, help="包含茶葉、鮮奶、配料、杯材、吸管與提袋損耗總和。")
+            fixed_rent = st.number_input("2. 每月門店租金與水電雜支 (元)", min_value=10000, max_value=200000, value=45000, step=5000)
+            fixed_labor = st.number_input("3. 每月正職與兼職員工總薪資 (元)", min_value=20000, max_value=500000, value=75000, step=5000)
+            
+            # 財務核心計算
+            var_cost_per_cup = market_avg_rev * (cogs_pct / 100)
+            margin_per_cup = market_avg_rev - var_cost_per_cup
+            total_fixed_cost = fixed_rent + fixed_labor
+            
+            # 防止分母為零
+            be_volume = int(np.ceil(total_fixed_cost / margin_per_cup)) if margin_per_cup > 0 else 0
+            
+            st.divider()
+            st.markdown(f"""
+            <div style="background: rgba(16, 185, 129, 0.08); padding: 22px; border-radius: 16px; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
+                <span style="font-size:14px; color:#065F46; font-weight:700;">🎯 單月損益平衡防線 (Break-Even Point)：</span><br>
+                <h3 style="margin: 10px 0; color:#047857; font-size:32px; font-weight:900;">{be_volume:,} 杯 / 月</h3>
+                <span style="font-size:13px; color:#065F46;">門店平均每日需穩定賣出 <b>{int(np.ceil(be_volume/30))} 杯</b> 即可跨越保本線，往後的每一杯都是純淨利！</span>
+            </div>
+            """, unsafe_allow_html=True)
+            
+        with calc_c2:
+            st.markdown("#### 📊 單杯手搖飲財務瀑布拆解 (Waterfall Chart)")
+            
+            fig_wf = go.Figure(go.Waterfall(
+                orientation = "v",
+                measure = ["relative", "relative", "total"],
+                x = ["大杯真實均價營收", "原物料/包材成本 (COGS)", "單杯貢獻毛利 (Margin)"],
+                textposition = "outside",
+                text = [f"${market_avg_rev:.1f}", f"-${var_cost_per_cup:.1f}", f"${margin_per_cup:.1f}"],
+                y = [market_avg_rev, -var_cost_per_cup, 0],
+                connector = {"line":{"color":"#CBD5E1", "dash":"dot"}},
+                decreasing = {"marker":{"color":"#EF4444"}},
+                increasing = {"marker":{"color":"#10B981"}},
+                totals = {"marker":{"color":"#6366F1"}}
+            ))
+            fig_wf.update_layout(height=280)
+            st.plotly_chart(apply_common_layout(fig_wf), use_container_width=True)
+            
+            st.markdown("#### 📈 月銷量規模 vs 淨利潤動態演化曲線")
+            
+            # 動態生成銷量級數
+            max_plot_vol = max(be_volume * 2, 4000)
+            volumes = np.arange(0, max_plot_vol, int(max_plot_vol/40) if max_plot_vol > 40 else 1)
+            profits = (volumes * margin_per_cup) - total_fixed_cost
+            
+            prof_df = pd.DataFrame({"月銷量 (杯)": volumes, "預估月淨利 (元)": profits})
+            
+            fig_line = px.line(prof_df, x="月銷量 (杯)", y="預估月淨利 (元)", color_discrete_sequence=["#4F46E5"])
+            # 繪製 0 元損益水平線
+            fig_line.add_shape(type="line", x0=0, y0=0, x1=max(volumes), y1=0, line=dict(color="#94A3B8", width=1.5, dash="dash"))
+            
+            if be_volume > 0:
+                fig_line.add_trace(go.Scatter(x=[be_volume], y=[0], mode='markers+text', name='損益平衡點',
+                                              text=[f" 損益平衡線 ({be_volume}杯)"], textposition="top right",
+                                              marker=dict(color='#F59E0B', size=12, line=dict(color='white', width=2))))
+            fig_line.update_layout(showlegend=False, height=320)
+            st.plotly_chart(apply_common_layout(fig_line), use_container_width=True)
