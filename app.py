@@ -432,7 +432,7 @@ with tab4:
             fig_top = apply_common_layout(fig_top)
             st.plotly_chart(fig_top, use_container_width=True)
         else:
-            st.info("💡 目前篩選的資料維度不足以計算加料溢價（需同時包含有加料 festive 品項）。")
+            st.info("💡 目前篩選的資料維度不足以計算加料溢價（需同時包含有加料與無加料的品項）。")
 
 # ------------------------------------------
 # 頁籤 5：動態樞紐分析
@@ -626,11 +626,12 @@ with tab7:
         psych_summary = psych_summary.sort_values(by='綜合 CP 值指數', ascending=False).reset_index(drop=True)
         psych_summary.index += 1
         
+        # 🛠️ 錯誤修復：使用有效支援的 HEX Code 取代無法辨識的 "purple"
         st.dataframe(
             psych_summary, 
             column_config={
                 "平均真實落差": st.column_config.NumberColumn("校正後平均落差", format="%+.1f 元"),
-                "綜合 CP 值指數": st.column_config.ProgressColumn("綜合 CP 值指數", min_value=0, max_value=100, format="%.1f", color="purple")
+                "綜合 CP 值指數": st.column_config.ProgressColumn("綜合 CP 值指數", min_value=0, max_value=100, format="%.1f", color="#818CF8")
             },
             use_container_width=True
         )
@@ -757,7 +758,6 @@ with tab9:
             # Fallback 靜態 UI：未設定 API Key 時的展示
             st.info("💡 提示：在左側控制台輸入 Gemini API Key 後，可解鎖即時生成式數據洞察。以下為系統內建的靜態結構分析規則快照：")
             
-            # (此處保留原先精美的規則引擎備份 UI，確保使用者在無 Key 時仍有良好體驗)
             if global_avg_price >= 55: market_type = "⚖️ 白領輕奢精緻戰場"
             elif global_avg_price >= 40: market_type = "🔥 主流中產高頻剛需區"
             else: market_type = "🥊 價格破壞型下沉紅海"
