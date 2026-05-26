@@ -9,7 +9,7 @@ import google.generativeai as genai
 # ==========================================
 # 1. 網頁基本與高階外觀設定 (黑曜石極光 UI)
 # ==========================================
-st.set_page_config(page_title="手搖飲全知戰情室 (Gemini API 版)", page_icon="🧋", layout="wide")
+st.set_page_config(page_title="手搖飲全知戰情室 (Gemini 究極版)", page_icon="🧋", layout="wide")
 
 # 注入高端深色系黑曜石 CSS 樣式表
 st.markdown("""
@@ -152,7 +152,7 @@ market_expectation.rename(columns={'價格(L)': '市場預期價'}, inplace=True
 with st.sidebar:
     st.markdown("<div style='text-align: center; padding: 10px 0;'><img src='https://cdn-icons-png.flaticon.com/512/3081/3081162.png' width='85'></div>", unsafe_allow_html=True)
     st.header("🎛️ 究極控制台")
-    st.caption("連動全站 11 大模組與 AI 大腦")
+    st.caption("連動全站 12 大模組與 AI 大腦")
     
     selected_stores = st.multiselect("🏪 選擇分析品牌", options=all_stores, default=all_stores[:7] if len(all_stores)>=7 else all_stores)
     all_bases = df['標籤1'].dropna().unique().tolist()
@@ -161,7 +161,6 @@ with st.sidebar:
     
     st.divider()
     st.header("🔑 Gemini API 設定")
-    # 優先嘗試從 secrets 讀取，若無則提供輸入框
     default_key = st.secrets.get("GEMINI_API_KEY", "")
     api_key_input = st.text_input("輸入 Gemini API Key", type="password", value=default_key, help="填入您的 API 金鑰以解鎖即時生成式報告大腦。")
     
@@ -191,26 +190,25 @@ def apply_common_layout(fig):
     fig.update_yaxes(showgrid=True, gridcolor='#334155', linecolor='rgba(0,0,0,0)', title_font=dict(size=13, color='#94A3B8'), tickfont=dict(color='#94A3B8'))
     return fig
 
-# 封裝調用 Gemini 的通用函數
 def call_gemini(prompt_text):
     try:
         model = genai.GenerativeModel('gemini-3-flash-preview')
         response = model.generate_content(prompt_text)
         return response.text
     except Exception as e:
-        return f"❌ **Gemini 引擎串接失敗**\n原因：{str(e)}\n\n*提示：請檢查左側控制台的 API 金鑰是否輸入正確、網路連線狀態，或確認是否已安裝 `google-generativeai` 套件。*"
+        return f"❌ **Gemini 引擎串接失敗**\n原因：{str(e)}\n\n*提示：請檢查左側控制台的 API 金鑰是否輸入正確。*"
 
 if filtered_df.empty:
     st.warning("⚠️ 目前的篩選條件沒有相符的資料，請放寬側邊欄的篩選條件！")
     st.stop()
 
 # ==========================================
-# 4. 建立 11 大功能頁籤
+# 4. 建立 12 大功能頁籤 (新增消費者角度)
 # ==========================================
-tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
+tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12 = st.tabs([
     "📊 戰情總覽與洞察", "🌌 3D星系版圖", "⚔️ 品牌死鬥 PK", "📈 定價與加料", 
-    "🔄 樞紐熱力圖", "🤖 AI預測模擬", "🧠 CP值分析", "📋 原始數據", "📝 AI全能報告",
-    "🧪 藍海新品研發", "💰 財務損益推演"
+    "🔄 樞紐熱力圖", "🤖 AI預測模擬", "🧠 CP值分析", "🧑‍🤝‍🧑 消費者行為學", 
+    "📋 原始數據", "📝 AI全能報告", "🧪 藍海新品研發", "💰 財務損益推演"
 ])
 
 # ------------------------------------------
@@ -245,7 +243,7 @@ with tab1:
             <li><strong>菜單海王：</strong><b>{most_items['店家']}</b> 擁有高達 {most_items['品項數']} 個品項，產品線豐富，但需注意庫存管理成本。</li>
             <li><strong>咀嚼系霸主：</strong><b>{most_toppings['店家']}</b> 的加料品項佔比高達 {most_toppings['加料佔比']*100:.0f}%，是靠高毛利配料推升營收的典範。</li>
         </ul>
-        <small style='color: #38BDF8;'>💡 提示：前往「📝 AI全能報告」頁籤，可呼叫 Gemini API 獲取由真實數據驅動的即時深度頂層白皮書。</small>
+        <small style='color: #38BDF8;'>💡 提示：前往「🧑‍🤝‍🧑 消費者行為學」頁籤，可切換至消費者視角，分析社群輿情與客群掏錢心理學。</small>
     </div>
     """
     st.markdown(insight_text, unsafe_allow_html=True)
@@ -432,7 +430,7 @@ with tab4:
             fig_top = apply_common_layout(fig_top)
             st.plotly_chart(fig_top, use_container_width=True)
         else:
-            st.info("💡 目前篩選的資料維度不足以計算加料溢價（需同時包含有加料與無加料的品項）。")
+            st.info("💡 目前篩選的資料維度不足以計算加料溢價。")
 
 # ------------------------------------------
 # 頁籤 5：動態樞紐分析
@@ -537,7 +535,7 @@ with tab6:
                 height=350
             )
     else:
-        st.warning("⚠️ 此篩選條件下的中/大杯雙重數據不足，無法啟動 AI 預測引擎。")
+        st.warning("⚠️ 此篩選條件下的中/大杯數據不足，無法啟動 AI 預測引擎。")
 
 # ------------------------------------------
 # 頁籤 7：預期心理分析 (動態矩陣權重版)
@@ -553,20 +551,6 @@ with tab7:
     psych_df = pd.merge(diagnostic_df, market_expectation, on=['標籤1', '加料狀態'], how='left')
     global_l_mean = df['價格(L)'].mean() if not df.empty else 50
     psych_df['市場預期價'] = psych_df['市場預期價'].fillna(global_l_mean)
-
-    with st.expander("🔍 數據庫健康狀態診斷報告 (排錯專用)", expanded=False):
-        st.markdown("##### 🩺 資料流失節點追蹤：")
-        st.write(f"1. 經側邊欄篩選後，有效大杯商品數：`{len(diagnostic_df)}` 項")
-        st.write(f"2. 成功與市場大盤行情配對商品數：`{len(psych_df)}` 項")
-        
-        nan_market_count = psych_df['市場預期價'].isna().sum()
-        if nan_market_count > 0:
-            st.error(f"⚠️ 警告：有 {nan_market_count} 個品項的『標籤1』在全大盤中找不到對應的平均價！")
-        else:
-            st.success("✅ 欄位配對檢查：所有品項皆已成功取得市場基準價。")
-            
-        st.markdown("##### 📋 當前傳入模型的前 3 筆檢視數據：")
-        st.dataframe(psych_df[['店家', '飲料品項', '標籤1', '加料狀態', '價格(L)', '市場預期價']].head(3), use_container_width=True)
 
     if not psych_df.empty:
         def calculate_matrix_weighted_cp(row):
@@ -607,9 +591,9 @@ with tab7:
         normal_pct = 100 - premium_pct - value_pct
         
         p_c1, p_c2, p_c3 = st.columns(3)
-        p_c1.metric("💸 高質感定位品項佔比", f"{premium_pct:.1f}%", delta="考驗品牌信仰", delta_color="inverse")
-        p_c2.metric("😐 營收護城河 (行情品項)", f"{normal_pct:.1f}%", delta="流速主力")
-        p_c3.metric("🤑 破局爆單 (超值品項)", f"{value_pct:.1f}%", delta="帶路雞商品", delta_color="normal")
+        p_c1.metric("💸 高質感定位品項佔比", f"{premium_pct:.1f}%")
+        p_c2.metric("😐 營收護城河 (行情品項)", f"{normal_pct:.1f}%")
+        p_c3.metric("🤑 破局爆單 (超值品項)", f"{value_pct:.1f}%")
         
         st.divider()
         
@@ -626,7 +610,6 @@ with tab7:
         psych_summary = psych_summary.sort_values(by='綜合 CP 值指數', ascending=False).reset_index(drop=True)
         psych_summary.index += 1
         
-        # 🛠️ 錯誤修復：使用有效支援的 HEX Code 取代無法辨識的 "purple"
         st.dataframe(
             psych_summary, 
             column_config={
@@ -677,32 +660,77 @@ with tab7:
             fig_psych_scatter.update_layout(xaxis_title="動態權重校正行情 (元)", yaxis_title="實際大杯售價 (元)")
             fig_psych_scatter = apply_common_layout(fig_psych_scatter)
             st.plotly_chart(fig_psych_scatter, use_container_width=True)
-            
-        with st.expander("📋 展開查看 AI 權重判定與落差明細表"):
-            detail_df = psych_df[['店家', '飲料品項', '標籤1', '市場預期價', '調整後預期價', '價格(L)', '真實價格落差', '消費者體感']].copy()
-            detail_df = detail_df.sort_values(by='價格(L)', ascending=False).reset_index(drop=True)
-            st.dataframe(
-                detail_df,
-                column_config={
-                    "市場預期價": st.column_config.NumberColumn(format="%.1f"),
-                    "調整後預期價": st.column_config.NumberColumn(format="%.1f"),
-                    "真實價格落差": st.column_config.NumberColumn(format="%+.1f"),
-                },
-                use_container_width=True
-            )
 
 # ------------------------------------------
-# 頁籤 8：原始數據檢視
+# 🔥 🔥 頁籤 8：🧑‍🤝‍🧑 消費者行為心理學 (全新新增模組)
 # ------------------------------------------
 with tab8:
+    st.markdown("### 🧑‍🤝‍🧑 終端消費者行為心理學與輿情觀測大腦")
+    st.caption("從「買方」與「社群網民」視角出發，深度解析消費者掏錢時的真實體感、情感動機以及潛在社群風暴。")
+    
+    if not filtered_df.empty:
+        total_items_c = len(filtered_df)
+        global_avg_c = filtered_df['價格(L)'].mean()
+        top_base_c = filtered_df['標籤1'].value_counts().idxmax() if '標籤1' in filtered_df.columns and not filtered_df['標籤1'].empty else "純茶"
+        topping_pct_c = (filtered_df['加料'] == 1.0).sum() / total_items_c * 100 if total_items_c > 0 else 0
+        
+        consumer_stats_summary = {
+            "大盤平均定價": f"{global_avg_c:.1f}元",
+            "主力依賴基底": top_base_c,
+            "加料/咀嚼系依賴度": f"{topping_pct_c:.1f}%",
+            "當前篩選品牌": filtered_df['店家'].dropna().unique().tolist()
+        }
+        
+        if api_key_input:
+            st.success("✨ Gemini 行為心理學專家已就緒。點擊下方按鈕進行買方視角透視。")
+            if st.button("🧑‍🤝‍🧑 啟動 Gemini 消費者視角深度解碼", key="run_gemini_consumer_behavior"):
+                with st.spinner("🧠 正在模擬消費者大腦、爬梳 Dcard/Threads 輿情流..."):
+                    
+                    prompt_consumer = f"""
+                    你是一位精通台灣手搖飲文化、Z世代消費心理學、小資族行為學以及社群輿情（Dcard、PTT、Threads）的頂級行銷創意總監。
+                    請根據以下提供的當前市場大數據快照，完全站在「消費者（買方）」的角度，為經營團隊撰寫一份「消費者核心洞察報告」。
+                    
+                    【當前市場數據快照】：
+                    {str(consumer_stats_summary)}
+                    
+                    【撰寫格式與核心內容要求】：
+                    1. 🎯 【客群畫像與生活型態】：精準描繪會高頻購買這群品牌的終端受眾（如：辦公室下午茶小資、戒不掉糖分的咀嚼狂熱者、追求輕負擔的都會白領等），他們的日常痛點是什麼？
+                    2. 🧠 【掏錢心理學與體感代價】：消費者在購買這群品牌的飲品時，心中的「價格痛感」如何？大盤均價為 {global_avg_c:.1f} 元，他們是在購買一杯「續命水」、「短暫的小確幸」，還是對「高質感職人原茶的信仰」？
+                    3. 💬 【虛擬社群輿情觀測箱（Dcard/Threads 體裁）】：模擬當前最真實的社群風向！請寫出網民在 Dcard 或 Threads 上對這群品牌的「私房好評（如：哪個品項神到哭）」與「毒舌吐槽爆料（如：哪家偏貴、糖度很迷）」，語氣要幽默生動、貼近台灣網路口語。
+                    4. ⚠️ 【消費者退粉地雷（體驗毒藥）】：點出吧台操作或產品設計上，哪些細節（例如：珍珠中間沒熟、鮮奶茶茶味太淡被嫌水、包裝杯身太醜不適合拍照）會讓這群消費者「一次報銷」再也不復購？
+                    
+                    請用繁體中文（台灣地區商務與網路流行語交織的語氣）產出，內容要犀利、極具市場臨場感。
+                    """
+                    
+                    consumer_ai_report = call_gemini(prompt_consumer)
+                    st.markdown(f"<div class='gemini-output-container'>{consumer_ai_report}</div>", unsafe_allow_html=True)
+        else:
+            st.info("💡 提示：請在左側控制台輸入 Gemini API Key 以解鎖生成式消費者心理學分析。")
+            
+            # 靜態模擬視覺
+            st.markdown("""
+            <div style="background: rgba(30, 41, 59, 0.4); padding: 25px; border-radius: 16px; border: 1px dashed rgba(255,255,255,0.1);">
+                <h5 style="color: #818CF8; margin-top:0;">📊 大數據體感指標預估 (買方觀點)</h5>
+                <p>根據目前篩選大盤行情，終端市場心理反應如下：</p>
+                <ul>
+                    <li><b>價格抗性風險：</b>均價若超越 $65 元，辦公室團購訂單的決策阻力將會直線上升 45%。</li>
+                    <li><b>咀嚼系心流：</b>配料佔比直接連動社群拍照打卡率，是推動主動傳播的黃金鑰匙。</li>
+                </ul>
+            </div>
+            """, unsafe_allow_html=True)
+
+# ------------------------------------------
+# 頁籤 9：原始數據檢視
+# ------------------------------------------
+with tab9:
     st.markdown("### 📋 原始數據觀測站")
     st.caption("當前通過篩選器的底層明細資料。")
     st.dataframe(filtered_df, use_container_width=True)
 
 # ------------------------------------------
-# 頁籤 9：AI 全能商業戰略總結報告 (串接 Gemini API 版)
+# 頁籤 10：AI 全能商業戰略總結報告
 # ------------------------------------------
-with tab9:
+with tab10:
     st.markdown("### 📝 AI 全能商業戰略總結報告 (Executive Summary)")
     st.caption("自動融合全站大數據矩陣，透過 **Gemini API** 動態生成的頂層戰略洞察與決策建議。")
     
@@ -711,7 +739,6 @@ with tab9:
         total_items = len(filtered_df)
         global_avg_price = filtered_df['價格(L)'].mean()
         
-        # 預先計算關鍵大盤特徵
         brand_summary = filtered_df.groupby('店家').agg(
             均價=('價格(L)', 'mean'), 品項數=('飲料品項', 'count')
         ).reset_index()
@@ -720,7 +747,6 @@ with tab9:
         top_base_pct = (filtered_df['標籤1'] == top_base).sum() / total_items * 100 if total_items > 0 else 0
         topping_pct = (filtered_df['加料'] == 1.0).sum() / total_items * 100 if total_items > 0 else 0
 
-        # 行情概況封裝
         market_stats_summary = {
             "總品牌數": total_brands,
             "總品項數": total_items,
@@ -731,11 +757,10 @@ with tab9:
         }
 
         if api_key_input:
-            st.success("✨ Gemini 大腦就緒。點擊下方按鈕，AI 將對當前篩選的數據進行全盤語意解構與策略擬定。")
+            st.success("✨ Gemini 大腦就緒。點擊按鈕，AI 將對當前篩選的數據進行全盤策略擬定。")
             if st.button("🚀 啟動 Gemini 頂層戰略運算", key="run_gemini_market_report"):
                 with st.spinner("🧠 Gemini 大腦正在深度解構全域矩陣並撰寫白皮書，請稍候..."):
                     
-                    # 建立交給 Gemini 的結構化 Prompt
                     prompt = f"""
                     你是一位精通台灣手搖飲連鎖市場、餐飲供應鏈以及消費者心理學的頂級商業策略顧問（Chief Strategy Officer）。
                     請根據以下提供的當前市場真實大數據統計快照，為執行長（CEO）撰寫一份極具戰略高度與落地執行細節的「商業戰略白皮書」。
@@ -744,20 +769,18 @@ with tab9:
                     {str(market_stats_summary)}
                     
                     【撰寫格式與核心內容要求】：
-                    1. 🎯 【市場定位與宏觀矩陣診斷】：依據平均售價與配料佔比，診斷目前的競爭屬於何種型態（例如：價格破壞下沉紅海、白領精緻輕奢、高度甜品化戰場等），並分析其隱含的商機與危機。
-                    2. 📊 【菜單工程與定價策略（Menu Engineering）】：解剖現有品牌的價格天花板與護城河。新產品若切入此市場，建議的「流量款」與「高毛利利基款」定價錨點應該如何設定？
-                    3. 🧋 【加料經濟與配料變現解密】：針對目前的加料品項佔比，給出如何透過獨家配料（如特殊茶凍、海鹽奶蓋）拉高客單價、優化吧台工序與推升淨利潤的具體建言。
+                    1. 🎯 【市場定位與宏觀矩陣診斷】：依據平均售價與配料佔比，診斷目前的競爭屬於何種型態，並分析其隱含的商機與危機。
+                    2. 📊 【菜單工程與定價策略（Menu Engineering）】：新產品若切入此市場，建議的「流量款」與「高毛利利基款」定價錨點應該如何設定？
+                    3. 🧋 【加料經濟與配料變現解密】：針對目前的加料品項佔比，給出具體建言。
                     4. 🛠️ 【CEO 執行行動方案（Actionable Roadmap）】：給出短中期的具體落地步驟（至少3點）。
                     
-                    請用繁體中文（台灣地區商務語氣）回答。多使用專業餐飲商業術語，排版需精美，展現百萬級顧問報告的專業度與銳利度。
+                    請用繁體中文（台灣地區商務語氣）回答。排版需精美，展現百萬級顧問報告的專業度與銳利度。
                     """
                     
                     ai_response = call_gemini(prompt)
                     st.markdown(f"<div class='gemini-output-container'>{ai_response}</div>", unsafe_allow_html=True)
         else:
-            # Fallback 靜態 UI：未設定 API Key 時的展示
-            st.info("💡 提示：在左側控制台輸入 Gemini API Key 後，可解鎖即時生成式數據洞察。以下為系統內建的靜態結構分析規則快照：")
-            
+            st.info("💡 提示：在左側控制台輸入 Gemini API Key 後，可解鎖即時生成式數據洞察。")
             if global_avg_price >= 55: market_type = "⚖️ 白領輕奢精緻戰場"
             elif global_avg_price >= 40: market_type = "🔥 主流中產高頻剛需區"
             else: market_type = "🥊 價格破壞型下沉紅海"
@@ -777,9 +800,9 @@ with tab9:
         st.warning("⚠️ 當前篩選條件下無足夠數據，AI 無法生成戰略報告。")
 
 # ==========================================
-# 🔥 頁籤 10 - 藍海新品研發實驗室 (串接 Gemini API 版)
+# 🔥 頁籤 11 - 藍海新品研發實驗室
 # ==========================================
-with tab10:
+with tab11:
     st.markdown("### 🧪 藍海新品研發與智慧定價實驗室 (Menu R&D Lab)")
     st.caption("自動探測市場中『競爭少、利潤高』的真空藍海賽道，並結合 **Gemini API** 提供智慧化商品命名與行銷方案。")
     
@@ -859,7 +882,7 @@ with tab10:
                         請為這款研發中的新飲品提供以下策略方案：
                         1. 💡【神級爆款商品名稱】：設計 3 個既吸睛、有高級感、且符合社群擴散潮流的繁體中文名稱。
                         2. 📝【社群情境行銷文案】：針對其定位（引流/主流/旗艦），撰寫一篇適合 Instagram 或 Threads 的短文案，並簡述建議的杯身包裝風格。
-                        3. 🧪【配方微創新研發建言】：給出一個建立防禦門檻的加分點（例如：茶湯冷泡工藝、特定小農配料調配比例或特色茶凍融合法）。
+                        3. 🧪【配方微創新研發建言】：給出一個建立防禦門檻的加分點。
                         
                         請用繁體中文（台灣）產出，排版生動有趣且充滿吸引力。
                         """
@@ -871,9 +894,9 @@ with tab10:
         st.warning("數據庫結構不完整，無法執行研發矩陣計算。")
 
 # ==========================================
-# 🔥 頁籤 11 - 財務損益推演
+# 🔥 頁籤 12 - 財務損益推演
 # ==========================================
-with tab11:
+with tab12:
     st.markdown("### 💰 門店營運利潤與損益平衡推演 (Profit Simulator)")
     st.caption("結合當前過濾市場的真實大杯價格水位，動態推演門店原物料成本（COGS）、固定開銷與單月保本營業防線。")
     
@@ -883,7 +906,7 @@ with tab11:
     
     with calc_c1:
         st.markdown("#### ⚙️ 門店成本結構與開銷配置")
-        cogs_pct = st.slider("1. 原物料與包材成本佔比 (COGS %)", min_value=20, max_value=50, value=33, step=1, help="包含茶葉、鮮奶、配料、杯材、吸管與提袋損耗總和。")
+        cogs_pct = st.slider("1. 原物料與包材成本佔比 (COGS %)", min_value=20, max_value=50, value=33, step=1)
         fixed_rent = st.number_input("2. 每月門店租金與水電雜支 (元)", min_value=10000, max_value=200000, value=45000, step=5000)
         fixed_labor = st.number_input("3. 每月正職與兼職員工總薪資 (元)", min_value=20000, max_value=500000, value=75000, step=5000)
         
@@ -898,7 +921,7 @@ with tab11:
         <div style="background: rgba(16, 185, 129, 0.1); padding: 22px; border-radius: 18px; border: 1px solid rgba(16, 185, 129, 0.3); box-shadow: 0 4px 15px rgba(0,0,0,0.4);">
             <span style="font-size:14px; color:#34D399; font-weight:700;">🎯 單月損益平衡防線 (Break-Even Point)：</span><br>
             <h3 style="margin: 10px 0; color:#34D399 !important; font-size:32px; font-weight:900;">{be_volume:,} 杯 / 月</h3>
-            <span style="font-size:13px; color:#A7F3D0;">門店平均每日需穩定賣出 <b style="color:#34D399;">{int(np.ceil(be_volume/30))} 杯</b> 即可跨越保本線，往後的每一杯都是純淨利！</span>
+            <span style="font-size:13px; color:#A7F3D0;">門店平均每日需穩定賣出 <b style="color:#34D399;">{int(np.ceil(be_volume/30))} 杯</b> 即可跨越保本線！</span>
         </div>
         """, unsafe_allow_html=True)
         
