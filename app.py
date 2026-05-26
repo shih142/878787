@@ -1,4 +1,3 @@
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -10,7 +9,7 @@ import google.generativeai as genai
 # ==========================================
 # 1. 網頁基本與高階外觀設定 (黑曜石極光 UI)
 # ==========================================
-st.set_page_config(page_title="手搖飲全知戰情室 (Gemini API 版)", page_icon="🧋", layout="wide")
+st.set_page_config(page_title="手搖飲全知戰情室 (Gemini 究極版)", page_icon="🧋", layout="wide")
 
 # 注入高端深色系黑曜石 CSS 樣式表
 st.markdown("""
@@ -148,7 +147,7 @@ market_expectation = df.groupby(['標籤1', '加料狀態'])['價格(L)'].mean()
 market_expectation.rename(columns={'價格(L)': '市場預期價'}, inplace=True)
 
 # ==========================================
-# 3. 側邊欄：全域過濾器與 Gemini API 配置
+# 3. 側邊欄：全域過濾器、Gemini API 與 WebGL 容錯開關
 # ==========================================
 with st.sidebar:
     st.markdown("<div style='text-align: center; padding: 10px 0;'><img src='https://cdn-icons-png.flaticon.com/512/3081/3081162.png' width='85'></div>", unsafe_allow_html=True)
@@ -160,6 +159,17 @@ with st.sidebar:
     selected_base = st.multiselect("🍃 選擇基底茶", options=all_bases, placeholder="預設為全茶種")
     topping_option = st.radio("🍬 加料狀態", ["全部", "有加料", "純茶/無加料"])
     
+    # 🛠️ 核心修復：新增瀏覽器 WebGL 降維容錯開關
+    st.divider()
+    st.header("🌐 瀏覽器圖形加速優化")
+    webgl_compat_mode = st.checkbox(
+        "啟用 WebGL 相容防禦模式", 
+        value=False, 
+        help="如果您的瀏覽器開啟 3D 圖表時出現空白或 WebGL 錯誤，請勾選此項。系統會自動將 3D 立體圖降維轉換為高維度 2D 氣泡圖，無損呈現所有指標數據。"
+    )
+    if webgl_compat_mode:
+        st.info("🟢 已啟動 2D 霓虹氣泡相容投影機制")
+
     st.divider()
     st.header("🔑 Gemini API 設定")
     default_key = st.secrets.get("GEMINI_API_KEY", "")
@@ -207,7 +217,7 @@ if filtered_df.empty:
 # 4. 建立 12 大功能頁籤
 # ==========================================
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11, tab12 = st.tabs([
-    "📊 戰情總覽與洞察", "🌌 3D星系版圖", "⚔️ 品牌死鬥 PK", "📈 定價與加料", 
+    "📊 戰情總覽與洞察", "🌌 星系競爭版圖", "⚔️ 品牌死鬥 PK", "📈 定價與加料", 
     "🔄 樞紐熱力圖", "🤖 AI預測模擬", "🧠 CP值分析", "🧑‍🤝‍🧑 消費者行為學", 
     "📋 原始數據", "📝 AI全能報告", "🧪 藍海新品研發", "💰 財務損益推演"
 ])
@@ -269,12 +279,10 @@ with tab1:
         st.plotly_chart(fig2, use_container_width=True)
 
 # ------------------------------------------
-# 頁籤 2：3D星系與市場版圖 (視覺優化)
+# 頁籤 2：星系競爭版圖 (含有容錯防禦開關)
 # ------------------------------------------
 with tab2:
-    st.markdown("### 🌌 市場 3D 星系與結構解剖")
-    st.markdown("#### 🔭 品牌 3D 競爭星系圖 (3D Market Galaxy)")
-    st.caption("💡 滑鼠可自由旋轉縮放！透過 X(價格)、Y(品項數)、Z(加料佔比) 尋找市場真空藍海區塊。")
+    st.markdown("### 🌌 市場星系與結構解剖")
     
     quad_df = filtered_df.dropna(subset=['價格(L)']).groupby('店家').agg(
         品項數=('飲料品項', 'count'), 均價=('價格(L)', 'mean'), 加料數=('加料', 'sum')
@@ -283,31 +291,34 @@ with tab2:
     if not quad_df.empty:
         quad_df['加料佔比(%)'] = (quad_df['加料數'] / quad_df['品項數'] * 100).round(1)
         
-        # 🚀 3D 優化：更換對比更鮮明的色系，調整大小模式
-        fig_3d = px.scatter_3d(quad_df, x='均價', y='品項數', z='加料佔比(%)',
-                               color='店家', size='品項數', text='店家',
-                               color_discrete_sequence=px.colors.qualitative.G10,
-                               hover_data={'店家': False, '均價': ':.1f', '品項數': True, '加料佔比(%)': True})
-        
-        # 🚀 3D 優化：加入亮色半透明發光框線，提高微光反光質感
-        fig_3d.update_traces(
-            textposition='top center', 
-            marker=dict(
-                line=dict(color='rgba(255,255,255,0.6)', width=1.5), 
-                opacity=0.9,
-                sizeref=0.5,
-                sizemode='diameter'
+        # 🛠️ 核心修復：如果 WebGL 異常則採用降維 2D 氣泡圖，反之維持高發光 3D 圖
+        if webgl_compat_mode:
+            st.markdown("#### 🔭 品牌空間競爭版圖 (WebGL 2D 相容投影)")
+            st.caption("💡 目前處於相容模式：橫軸為大杯均價，縱軸為品項豐富度，**氣泡大小代表加料佔比(%)**，無損解析 3D 指標結構。")
+            fig_2d_galaxy = px.scatter(
+                quad_df, x='均價', y='品項數', size='加料佔比(%)', color='店家', text='店家',
+                size_max=35, color_discrete_sequence=px.colors.qualitative.G10,
+                hover_data={'均價': ':.1f', '品項數': True, '加料佔比(%)': True}
             )
-        )
-        
-        # 🚀 3D 優化：將 panel 背景調和為極深極光黑，將網格淡化為半透明，並調整為黃金俯瞰視角
-        fig_3d.update_layout(scene=dict(
-            xaxis=dict(title='大杯均價 (X)', backgroundcolor="#090D1A", gridcolor="rgba(51, 65, 85, 0.5)", showbackground=True, title_font=dict(color="#A5B4FC", size=12), tickfont=dict(color="#94A3B8")),
-            yaxis=dict(title='品項豐富度 (Y)', backgroundcolor="#020617", gridcolor="rgba(51, 65, 85, 0.5)", showbackground=True, title_font=dict(color="#A5B4FC", size=12), tickfont=dict(color="#94A3B8")),
-            zaxis=dict(title='加料佔比% (Z)', backgroundcolor="#090D1A", gridcolor="rgba(51, 65, 85, 0.5)", showbackground=True, title_font=dict(color="#A5B4FC", size=12), tickfont=dict(color="#94A3B8")),
-            camera=dict(eye=dict(x=1.6, y=1.6, z=1.0))
-        ), height=650, margin=dict(l=0, r=0, b=0, t=0), showlegend=True)
-        st.plotly_chart(fig_3d, use_container_width=True)
+            fig_2d_galaxy.update_traces(textposition='top center', marker=dict(opacity=0.85, line=dict(width=1.5, color='rgba(255,255,255,0.5)')))
+            fig_2d_galaxy = apply_common_layout(fig_2d_galaxy)
+            fig_2d_galaxy.update_layout(xaxis_title="大杯均價 (元)", yaxis_title="品項豐富度 (款)", height=550)
+            st.plotly_chart(fig_2d_galaxy, use_container_width=True)
+        else:
+            st.markdown("#### 🔭 品牌 3D 競爭星系圖 (3D Market Galaxy)")
+            st.caption("💡 滑鼠可自由旋轉縮放！若此圖表顯示空白或報錯，請在左側控制台勾選「啟用 WebGL 相容防禦模式」。")
+            fig_3d = px.scatter_3d(quad_df, x='均價', y='品項數', z='加料佔比(%)',
+                                   color='店家', size='品項數', text='店家',
+                                   color_discrete_sequence=px.colors.qualitative.G10,
+                                   hover_data={'店家': False, '均價': ':.1f', '品項數': True, '加料佔比(%)': True})
+            fig_3d.update_traces(textposition='top center', marker=dict(line=dict(color='rgba(255,255,255,0.6)', width=1.5), opacity=0.9, sizeref=0.5, sizemode='diameter'))
+            fig_3d.update_layout(scene=dict(
+                xaxis=dict(title='大杯均價 (X)', backgroundcolor="#090D1A", gridcolor="rgba(51, 65, 85, 0.5)", showbackground=True, title_font=dict(color="#A5B4FC", size=12), tickfont=dict(color="#94A3B8")),
+                yaxis=dict(title='品項豐富度 (Y)', backgroundcolor="#020617", gridcolor="rgba(51, 65, 85, 0.5)", showbackground=True, title_font=dict(color="#A5B4FC", size=12), tickfont=dict(color="#94A3B8")),
+                zaxis=dict(title='加料佔比% (Z)', backgroundcolor="#090D1A", gridcolor="rgba(51, 65, 85, 0.5)", showbackground=True, title_font=dict(color="#A5B4FC", size=12), tickfont=dict(color="#94A3B8")),
+                camera=dict(eye=dict(x=1.6, y=1.6, z=1.0))
+            ), height=650, margin=dict(l=0, r=0, b=0, t=0), showlegend=True)
+            st.plotly_chart(fig_3d, use_container_width=True)
 
     st.divider()
     
@@ -395,8 +406,6 @@ with tab3:
                 fig_pk1 = px.histogram(pk_df, x="價格(L)", color="店家", barmode="overlay", nbins=15, color_discrete_sequence=['#F43F5E', '#38BDF8'], opacity=0.6)
                 fig_pk1 = apply_common_layout(fig_pk1)
                 st.plotly_chart(fig_pk1, use_container_width=True)
-        else:
-            st.warning("⚠️ 請選擇兩個不同的品牌進行 PK！")
 
 # ------------------------------------------
 # 頁籤 4：定價與加料經濟
@@ -532,24 +541,6 @@ with tab6:
         fig_reg.update_layout(xaxis_title="中杯實際價格 (自變數 X)", yaxis_title="大杯實際價格 (應變數 Y)", hovermode="closest")
         fig_reg = apply_common_layout(fig_reg)
         st.plotly_chart(fig_reg, use_container_width=True)
-        
-        with st.expander("📋 展開查看 AI 升杯性價比明細表"):
-            table_display = reg_df[['店家', '飲料品項', '標籤1', '價格(M)', '價格(L)', 'AI預測大杯價', '升杯落差', 'AI升杯判定']].copy()
-            table_display = table_display.sort_values(by='升杯落差', ascending=False).reset_index(drop=True)
-            table_display.index += 1
-            st.dataframe(
-                table_display, 
-                column_config={
-                    "價格(M)": st.column_config.NumberColumn(format="$%d"),
-                    "價格(L)": st.column_config.NumberColumn(format="$%d"),
-                    "AI預測大杯價": st.column_config.NumberColumn(format="$%.1f"),
-                    "升杯落差": st.column_config.NumberColumn(format="%+.1f 元"),
-                },
-                use_container_width=True, 
-                height=350
-            )
-    else:
-        st.warning("⚠️ 此篩選條件下的中/大杯數據不足，無法啟動 AI 預測引擎。")
 
 # ------------------------------------------
 # 頁籤 7：預期心理分析 (動態矩陣權重版)
@@ -653,7 +644,7 @@ with tab7:
             st.plotly_chart(fig_psych_bar, use_container_width=True)
 
         with chart_col2:
-            st.markdown("#### 🎯 實際售價 vs 矩陣校正行情價")
+            st.markdown("#### 🎯 實際售價 vs 矩慢校正行情價")
             fig_psych_scatter = px.scatter(
                 psych_df, x="調整後預期價", y="價格(L)", color="消費者體感",
                 hover_data={'店家': True, '飲料品項': True, '標籤1': True, '真實價格落差': ':.1f'},
@@ -709,7 +700,7 @@ with tab8:
                     
                     【撰寫格式與核心內容要求】：
                     1. 🎯 【客群畫像與生活型態】：精準描繪會高頻購買這群品牌的終端受眾，他們的日常痛點是什麼？
-                    2. 🧠 【掏錢心理學與體感代價】：大盤均價為 {global_avg_c:.1f} 元，他們是在購買一杯續命水，還是對高質感茶湯的信仰？
+                    2. 🧠 【掏錢心理學與體感代價】：消費者是在購買一杯續命水，還是對高質感茶湯的信仰？
                     3. 💬 【虛擬社群輿情觀測箱（Dcard/Threads 體裁）】：請模擬寫出網民最真實的好評與毒舌吐槽爆料，語氣要幽默生動、貼近台灣網路口語。
                     4. ⚠️ 【消費者退粉地雷（體驗毒藥）】：點出產品設計上哪些細節會讓這群消費者一次報銷再也不復購？
                     
@@ -808,12 +799,10 @@ with tab10:
                 </div>
             </div>
             """, unsafe_allow_html=True)
-    else:
-        st.warning("⚠️ 當前篩選條件下無足夠數據，AI 無法生成戰略報告。")
 
-# ==========================================
-# 🔥 頁籤 11：藍海新品研發實驗室 (3D 星系優化)
-# ==========================================
+# ------------------------------------------
+# 頁籤 11：藍海新品研發實驗室 (含有容錯防禦開關)
+# ------------------------------------------
 with tab11:
     st.markdown("### 🧪 藍海新品研發與智慧定價實驗室 (Menu R&D Lab)")
     st.caption("自動探測市場中『競爭少、利潤高』的真空藍海賽道，並結合 **Gemini API** 提供智慧化商品命名與行銷方案。")
@@ -841,35 +830,36 @@ with tab11:
                 </div>
                 """, unsafe_allow_html=True)
             
-            st.markdown("#### 📊 全品類市場供需與溢價分佈 (3D 藍海星系)")
+            st.markdown("#### 📊 全品類市場供需與溢價分佈")
             
-            # 🚀 3D 優化：大幅拉開氣泡尺寸（size_max=35），將光澤感拉滿
-            fig_gap = px.scatter_3d(
-                gap_analysis, x='品項數', y='均價', z='藍海指數', size='藍海指數', color='標籤1', text='標籤1',
-                hover_data={'藍海指數': ':.1f', '品項數': True, '均價': ':.1f'}, 
-                color_discrete_sequence=px.colors.qualitative.Pastel,
-                size_max=35
-            )
-            
-            # 🚀 3D 優化：加入霓虹發光框線與高飽和度不透明度
-            fig_gap.update_traces(
-                textposition='top center', 
-                marker=dict(
-                    opacity=0.9, 
-                    line=dict(width=1.5, color='rgba(255,255,255,0.7)'),
+            # 🛠️ 核心修復：如果 WebGL 異常，降維轉換成 2D 霓虹散佈氣泡圖，無損解析藍海指數
+            if webgl_compat_mode:
+                fig_2d_gap = px.scatter(
+                    gap_analysis, x='品項數', y='均價', size='藍海指數', color='標籤1', text='標籤1',
+                    size_max=35, color_discrete_sequence=px.colors.qualitative.Pastel,
+                    hover_data={'藍海指數': ':.1f', '品項數': True, '均價': ':.1f'}
                 )
-            )
-            
-            # 🚀 3D 優化：融合極黑網格底色與最適合觀察藍海斜率的相機夾角
-            fig_gap.update_layout(
-                scene=dict(
-                    xaxis=dict(title='市場競爭度 (商品數)', backgroundcolor="#020617", gridcolor="rgba(51, 65, 85, 0.4)", showbackground=True, title_font=dict(color="#F8FAFC", size=12), tickfont=dict(color="#94A3B8")),
-                    yaxis=dict(title='定價天花板 (均價)', backgroundcolor="#090D1A", gridcolor="rgba(51, 65, 85, 0.4)", showbackground=True, title_font=dict(color="#F8FAFC", size=12), tickfont=dict(color="#94A3B8")),
-                    zaxis=dict(title='藍海潛力指數', backgroundcolor="#020617", gridcolor="rgba(51, 65, 85, 0.4)", showbackground=True, title_font=dict(color="#F8FAFC", size=12), tickfont=dict(color="#94A3B8")),
-                    camera=dict(eye=dict(x=1.5, y=1.5, z=0.9))
-                ), height=600, margin=dict(l=0, r=0, b=0, t=30), showlegend=True
-            )
-            st.plotly_chart(fig_gap, use_container_width=True)
+                fig_2d_gap.update_traces(marker=dict(opacity=0.9, line=dict(width=1.5, color='rgba(255,255,255,0.6)')))
+                fig_2d_gap = apply_common_layout(fig_2d_gap)
+                fig_2d_gap.update_layout(xaxis_title="現有競品商品數 (競爭度 X)", yaxis_title="市場定價天花板 (利潤 Y)", height=500)
+                st.plotly_chart(fig_2d_gap, use_container_width=True)
+            else:
+                fig_gap = px.scatter_3d(
+                    gap_analysis, x='品項數', y='均價', z='藍海指數', size='藍海指數', color='標籤1', text='標籤1',
+                    hover_data={'藍海指數': ':.1f', '品項數': True, '均價': ':.1f'}, 
+                    color_discrete_sequence=px.colors.qualitative.Pastel,
+                    size_max=35
+                )
+                fig_gap.update_traces(textposition='top center', marker=dict(opacity=0.9, line=dict(width=1.5, color='rgba(255,255,255,0.7)')))
+                fig_gap.update_layout(
+                    scene=dict(
+                        xaxis=dict(title='市場競爭度 (商品數)', backgroundcolor="#020617", gridcolor="rgba(51, 65, 85, 0.4)", showbackground=True, title_font=dict(color="#F8FAFC", size=12), tickfont=dict(color="#94A3B8")),
+                        yaxis=dict(title='定價天花板 (均價)', backgroundcolor="#090D1A", gridcolor="rgba(51, 65, 85, 0.4)", showbackground=True, title_font=dict(color="#F8FAFC", size=12), tickfont=dict(color="#94A3B8")),
+                        zaxis=dict(title='藍海潛力指數', backgroundcolor="#020617", gridcolor="rgba(51, 65, 85, 0.4)", showbackground=True, title_font=dict(color="#F8FAFC", size=12), tickfont=dict(color="#94A3B8")),
+                        camera=dict(eye=dict(x=1.5, y=1.5, z=0.9))
+                    ), height=600, margin=dict(l=0, r=0, b=0, t=30), showlegend=True
+                )
+                st.plotly_chart(fig_gap, use_container_width=True)
             
         with rd_c2:
             st.markdown("#### 💡 智慧新品研發模擬與定價大腦")
@@ -919,9 +909,9 @@ with tab11:
     else:
         st.warning("數據庫結構不完整，無法執行研發矩陣計算。")
 
-# ------------------------------------------
+# ==========================================
 # 頁籤 12：財務損益推演
-# ------------------------------------------
+# ==========================================
 with tab12:
     st.markdown("### 💰 門店營運利潤與損益平衡推演 (Profit Simulator)")
     st.caption("結合當前過濾市場的真實大杯價格水位，動態推演門店原物料成本（COGS）、固定開銷與單月保本營業防線。")
