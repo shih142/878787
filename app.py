@@ -6,49 +6,100 @@ import scipy.stats as stats
 import numpy as np
 
 # ==========================================
-# 1. 網頁基本與高階外觀設定 (究極琉璃 UI)
+# 1. 網頁基本與高階外觀設定 (殿堂級琉璃 UI)
 # ==========================================
-st.set_page_config(page_title="手搖飲全知戰情室 (究極版)", page_icon="🧋", layout="wide")
+st.set_page_config(page_title="手搖飲全知戰情室 (究極美化版)", page_icon="🧋", layout="wide")
 
+# 注入高階 CSS 樣式表
 st.markdown("""
     <style>
-    /* 究極版專屬：毛玻璃 (Glassmorphism) 與高級漸層背景 */
-    .stApp {
-        background: radial-gradient(circle at 10% 20%, rgb(240, 246, 255) 0%, rgb(245, 247, 250) 90%);
+    /* 引入現代感雙字體系統 */
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+    
+    html, body, [class*="css"], .stApp {
+        font-family: 'Inter', 'Noto Sans TC', sans-serif;
     }
-    h1, h2, h3, h4 {color: #1E293B; font-weight: 900; letter-spacing: -0.5px;}
-    .stTabs [data-baseweb="tab-list"] {gap: 8px; border-bottom: none; padding-bottom: 5px;}
+    
+    /* 全域精緻漸層背景 */
+    .stApp {
+        background: radial-gradient(circle at 10% 20%, #F1F5F9 0%, #E2E8F0 100%);
+    }
+    
+    /* 標題與內文層級強化 */
+    h1 { font-weight: 900 !important; color: #0F172A !important; letter-spacing: -1px; margin-bottom: 5px; }
+    h2, h3, h4 { font-weight: 800 !important; color: #1E293B !important; }
+    
+    /* 側邊欄控制台極致毛玻璃化 */
+    [data-testid="stSidebar"] {
+        background: rgba(248, 250, 252, 0.4) !important;
+        backdrop-filter: blur(20px) !important;
+        border-right: 1px solid rgba(255, 255, 255, 0.5) !important;
+        box-shadow: 10px 0 30px rgba(15, 23, 42, 0.03);
+    }
+    [data-testid="stSidebar"] .stWidget {
+        background: rgba(255, 255, 255, 0.5);
+        padding: 15px;
+        border-radius: 14px;
+        border: 1px solid rgba(255, 255, 255, 0.6);
+        margin-bottom: 12px;
+        transition: all 0.3s ease;
+    }
+    [data-testid="stSidebar"] .stWidget:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(0, 0, 0, 0.02);
+    }
+    
+    /* 高級頁籤微互動設計 */
+    .stTabs [data-baseweb="tab-list"] { gap: 10px; border-bottom: none; padding: 10px 0; }
     .stTabs [data-baseweb="tab"] {
-        height: 45px; white-space: pre-wrap; background-color: rgba(255,255,255,0.6); 
-        border-radius: 12px; padding: 0 18px; font-size: 15px; font-weight: 700; color: #64748B; 
-        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); border: 1px solid rgba(255,255,255,0.8);
-        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.02); margin-right: 5px; backdrop-filter: blur(10px);
+        height: 48px; white-space: pre-wrap; background-color: rgba(255, 255, 255, 0.65); 
+        border-radius: 14px; padding: 0 22px; font-size: 15px; font-weight: 700; color: #475569; 
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); border: 1px solid rgba(255, 255, 255, 0.8);
+        box-shadow: 0 4px 12px rgba(15, 23, 42, 0.02); margin-right: 2px; backdrop-filter: blur(8px);
+    }
+    .stTabs [data-baseweb="tab"]:hover {
+        background-color: rgba(255, 255, 255, 0.9); color: #1E293B; transform: translateY(-1px);
     }
     .stTabs [aria-selected="true"] {
-        background: linear-gradient(135deg, #6366F1 0%, #4F46E5 100%);
-        color: white !important; border: none; box-shadow: 0 10px 15px -3px rgba(99, 102, 241, 0.4);
-        transform: translateY(-2px);
+        background: linear-gradient(135deg, #4F46E5 0%, #3730A3 100%) !important;
+        color: white !important; border: none !important; 
+        box-shadow: 0 12px 24px -6px rgba(79, 70, 229, 0.4) !important;
+        transform: translateY(-3px) !important;
     }
+    
+    /* KPI 容器懸浮光澤感 */
     div[data-testid="metric-container"] {
-        background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px);
-        border: 1px solid rgba(255,255,255,0.9); padding: 20px; border-radius: 16px; 
-        box-shadow: 0 10px 25px -5px rgba(0,0,0,0.05), inset 0 0 0 1px rgba(255,255,255,1); 
-        transition: transform 0.3s, box-shadow 0.3s;
+        background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(255, 255, 255, 0.6) 100%);
+        backdrop-filter: blur(16px);
+        border: 1px solid rgba(255, 255, 255, 0.9); padding: 22px; border-radius: 20px; 
+        box-shadow: 0 10px 30px -5px rgba(15, 23, 42, 0.04), inset 0 1px 1px rgba(255, 255, 255, 0.9); 
+        transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
     }
     div[data-testid="metric-container"]:hover {
-        transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1);
+        transform: translateY(-6px); 
+        box-shadow: 0 22px 35px -10px rgba(15, 23, 42, 0.08);
+        border-color: rgba(79, 70, 229, 0.2);
     }
+    div[data-testid="stMetricValue"] { font-size: 32px !important; font-weight: 800 !important; color: #0F172A; }
+    div[data-testid="stMetricLabel"] { font-size: 14px !important; font-weight: 600 !important; color: #64748B; }
+    
+    /* AI 決策盒黑曜石極光版 */
     .ai-insight-box {
-        background: linear-gradient(145deg, #1E293B, #0F172A); color: #F8FAFC;
-        padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
-        border-left: 5px solid #38BDF8; margin-bottom: 20px;
+        background: linear-gradient(145deg, #0F172A, #1E293B); color: #F1F5F9;
+        padding: 28px; border-radius: 20px; box-shadow: 0 20px 40px rgba(15,23,42,0.15);
+        border-left: 6px solid #38BDF8; margin-bottom: 25px; position: relative; overflow: hidden;
     }
-    .ai-insight-box h4 {color: #38BDF8; margin-top: 0;}
+    .ai-insight-box::after {
+        content: ''; position: absolute; top: -50%; right: -50%; width: 200px; height: 200px;
+        background: radial-gradient(circle, rgba(56,189,248,0.1) 0%, transparent 70%); pointer-events: none;
+    }
+    .ai-insight-box h4 { color: #38BDF8 !important; margin-top: 0; font-weight: 900; letter-spacing: 0.5px; }
+    .ai-insight-box li { margin-bottom: 10px; font-size: 15px; color: #CBD5E1; line-height: 1.6; }
     </style>
 """, unsafe_allow_html=True)
 
-st.title("🧋 台灣手搖飲商業分析戰情室 (Ultimate 究極版)")
-st.markdown("融合 3D 視覺化、AI 決策大腦、定價沙盤推演與消費者行為學的 **神級商業決策系統**。")
+st.title("🧋 台灣手搖飲商業分析戰情室 (Ultimate 究極美化版)")
+st.markdown("<p style='font-size:16px; color:#475569;'>融合 3D 立體版圖、AI 決策大腦、定價沙盤推演與消費者行為學的 <b>神級商業決策系統</b>。</p>", unsafe_allow_html=True)
 
 # ==========================================
 # 2. 讀取與預處理資料
@@ -72,13 +123,11 @@ def load_data():
 with st.spinner("🚀 系統啟動中... 正在載入全台手搖飲大數據..."):
     df = load_data()
 
-# 全域防呆：檢查資料庫是否成功讀取
 if df.empty:
     st.error("❌ 系統初始化失敗：找不到 `飲料清單.xlsx` 或活頁簿名稱不正確。")
     st.info("💡 請確認專案根目錄下存在 `飲料清單.xlsx` 且包含名為 `飲料清單` 的工作表。")
     st.stop()
 
-# 資料讀取成功後的正常流
 st.toast('戰情室啟動成功！資料已同步。', icon='✅')
 all_stores = df['店家'].dropna().unique().tolist()
 market_expectation = df.groupby(['標籤1', '加料狀態'])['價格(L)'].mean().reset_index()
@@ -88,7 +137,7 @@ market_expectation.rename(columns={'價格(L)': '市場預期價'}, inplace=True
 # 3. 側邊欄：全域過濾器
 # ==========================================
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/3081/3081162.png", width=90)
+    st.markdown("<div style='text-align: center; padding: 10px 0;'><img src='https://cdn-icons-png.flaticon.com/512/3081/3081162.png' width='85'></div>", unsafe_allow_html=True)
     st.header("🎛️ 究極控制台")
     st.caption("連動全站 11 大模組與 AI 大腦")
     
@@ -98,8 +147,8 @@ with st.sidebar:
     topping_option = st.radio("🍬 加料狀態", ["全部", "有加料", "純茶/無加料"])
     
     st.divider()
-    st.markdown(f"**📊 總體資料庫**\n- 總店家數: {len(all_stores)}\n- 總品項數: {len(df)}")
-    st.caption("*(Powered by Streamlit Ultimate)*")
+    st.markdown(f"**📊 總體資料庫狀況**\n- 總品牌數: ` {df['店家'].nunique()} ` 家\n- 總品項數: ` {len(df)} ` 款")
+    st.caption("*(Powered by Streamlit Premium UI)*")
 
 filtered_df = df.copy()
 if selected_stores: filtered_df = filtered_df[filtered_df['店家'].isin(selected_stores)]
@@ -108,12 +157,13 @@ if topping_option != "全部": filtered_df = filtered_df[filtered_df['加料狀�
 
 def apply_common_layout(fig):
     fig.update_layout(
-        plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', margin=dict(t=40, b=20, l=10, r=10),
-        hoverlabel=dict(bgcolor="rgba(255,255,255,0.9)", font_size=14, font_family="Arial", bordercolor="#CBD5E1"),
-        font=dict(color="#1E293B")
+        plot_bgcolor='rgba(0,0,0,0)', paper_bgcolor='rgba(0,0,0,0)', 
+        margin=dict(t=50, b=30, l=15, r=15),
+        hoverlabel=dict(bgcolor="rgba(15, 23, 42, 0.9)", font_size=14, font_color="#F8FAFC", font_family="Inter", bordercolor="rgba(255,255,255,0.1)"),
+        font=dict(color="#334155", family="Noto Sans TC")
     )
-    fig.update_xaxes(showgrid=False, linecolor='#E2E8F0')
-    fig.update_yaxes(showgrid=True, gridcolor='#F1F5F9', linecolor='#E2E8F0')
+    fig.update_xaxes(showgrid=False, linecolor='#CBD5E1', title_font=dict(size=13, gridcolor='rgba(0,0,0,0)'))
+    fig.update_yaxes(showgrid=True, gridcolor='#E2E8F0', linecolor='rgba(0,0,0,0)', title_font=dict(size=13))
     return fig
 
 if filtered_df.empty:
@@ -121,7 +171,7 @@ if filtered_df.empty:
     st.stop()
 
 # ==========================================
-# 4. 建立 11 大究極功能頁籤
+# 4. 建立 11 大功能頁籤
 # ==========================================
 tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
     "📊 戰情總覽與洞察", "🌌 3D星系版圖", "⚔️ 品牌死鬥 PK", "📈 定價與加料", 
@@ -133,7 +183,7 @@ tab1, tab2, tab3, tab4, tab5, tab6, tab7, tab8, tab9, tab10, tab11 = st.tabs([
 # 頁籤 1：營運總覽與 AI 洞察
 # ------------------------------------------
 with tab1:
-    st.markdown("### 🚀 關鍵營運指標 (KPI)")
+    st.markdown("<h3 style='margin-top:10px;'>🚀 關鍵營運指標 (KPI)</h3>", unsafe_allow_html=True)
     col1, col2, col3, col4 = st.columns(4)
     col1.metric("📦 有效品項總數", f"{len(filtered_df)} 項")
     avg_l_price = filtered_df['價格(L)'].mean()
@@ -172,16 +222,17 @@ with tab1:
         st.markdown("#### 📊 品牌均價排行榜")
         avg_price_df = filtered_df.groupby(['店家', '加料狀態'])['價格(L)'].mean().reset_index()
         fig1 = px.bar(avg_price_df, x='店家', y='價格(L)', color='加料狀態', barmode='group', text_auto='.0f', 
-                     color_discrete_map={'有加料': '#F59E0B', '純茶/無加料': '#10B981'})
+                     color_discrete_map={'有加料': '#6366F1', '純茶/無加料': '#10B981'})
         fig1.update_layout(xaxis={'categoryorder':'total descending'}, yaxis_title="平均價格 (元)", xaxis_title="")
         fig1 = apply_common_layout(fig1)
         st.plotly_chart(fig1, use_container_width=True)
 
     with c2:
         st.markdown("#### 🍩 全域基底茶生態圈")
-        fig2 = px.pie(filtered_df, names='標籤1', hole=0.45, color_discrete_sequence=px.colors.qualitative.Prism)
-        fig2.update_traces(textposition='inside', textinfo='percent+label', pull=[0.05 if i==0 else 0 for i in range(len(filtered_df['標籤1'].unique()))])
-        fig2.update_layout(margin=dict(t=20, b=10, l=10, r=10), showlegend=False)
+        fig2 = px.pie(filtered_df, names='標籤1', hole=0.5, color_discrete_sequence=px.colors.qualitative.Safe)
+        fig2.update_traces(textposition='inside', textinfo='percent+label', pull=[0.03 if i==0 else 0 for i in range(len(filtered_df['標籤1'].unique()))])
+        fig2.update_layout(margin=dict(t=30, b=10, l=10, r=10), showlegend=False)
+        fig2 = apply_common_layout(fig2)
         st.plotly_chart(fig2, use_container_width=True)
 
 # ------------------------------------------
@@ -200,12 +251,14 @@ with tab2:
         quad_df['加料佔比(%)'] = (quad_df['加料數'] / quad_df['品項數'] * 100).round(1)
         fig_3d = px.scatter_3d(quad_df, x='均價', y='品項數', z='加料佔比(%)',
                                color='店家', size='品項數', text='店家',
-                               color_discrete_sequence=px.colors.qualitative.Bold,
+                               color_discrete_sequence=px.colors.qualitative.Prism,
                                hover_data={'店家': False, '均價': ':.1f', '品項數': True, '加料佔比(%)': True})
-        fig_3d.update_traces(textposition='top center', marker=dict(line=dict(color='white', width=1), opacity=0.9))
+        fig_3d.update_traces(textposition='top center', marker=dict(line=dict(color='white', width=1), opacity=0.85))
         fig_3d.update_layout(scene=dict(
-            xaxis_title='大杯均價 (X)', yaxis_title='品項豐富度 (Y)', zaxis_title='加料佔比% (Z)',
-            camera=dict(eye=dict(x=1.5, y=1.5, z=0.5))
+            xaxis=dict(title='大杯均價 (X)', backgroundcolor="#F8FAFC", gridcolor="#CBD5E1", showbackground=True),
+            yaxis=dict(title='品項豐富度 (Y)', backgroundcolor="#F1F5F9", gridcolor="#CBD5E1", showbackground=True),
+            zaxis=dict(title='加料佔比% (Z)', backgroundcolor="#E2E8F0", gridcolor="#CBD5E1", showbackground=True),
+            camera=dict(eye=dict(x=1.4, y=1.4, z=0.6))
         ), height=600, margin=dict(l=0, r=0, b=0, t=0), showlegend=False)
         st.plotly_chart(fig_3d, use_container_width=True)
 
@@ -214,8 +267,8 @@ with tab2:
     with st.expander("📂 展開查看：品牌戰略板塊矩陣與菜單宇宙", expanded=False):
         st.markdown("#### 🧱 品牌戰略定價板塊矩陣 (Treemap Matrix)")
         if not quad_df.empty:
-            fig_tree = px.treemap(quad_df, path=[px.Constant("全市場版圖"), '店家'], values='品項數', color='均價', color_continuous_scale='RdYlBu_r', hover_data={'均價': ':.1f'})
-            fig_tree.update_traces(hovertemplate='<b>%{label}</b><br>品項數: %{value} 項<br>大杯均價: $ %{color:.1f}<extra></extra>', textinfo="label+value", textfont=dict(size=16, family="Arial Black"), root_color="lightgrey")
+            fig_tree = px.treemap(quad_df, path=[px.Constant("全市場版圖"), '店家'], values='品項數', color='均價', color_continuous_scale='YlGnBu')
+            fig_tree.update_traces(hovertemplate='<b>%{label}</b><br>品項數: %{value} 項<br>大杯均價: $ %{color:.1f}<extra></extra>', textinfo="label+value", textfont=dict(size=15, color="white"), root_color="lightgrey")
             fig_tree.update_layout(margin=dict(t=30, l=10, r=10, b=20), height=450)
             st.plotly_chart(fig_tree, use_container_width=True)
         
@@ -226,7 +279,7 @@ with tab2:
         if valid_sunburst_stores:
             selected_sun_store = st.selectbox("🔍 選擇要放大解剖的品牌菜單", options=valid_sunburst_stores, index=0)
             sun_df = filtered_df[filtered_df['店家'] == selected_sun_store].dropna(subset=['價格(L)']).copy().fillna("無分類")
-            fig_sun = px.sunburst(sun_df, path=['店家', '標籤1', '加料狀態', '飲料品項'], values='價格(L)', color='價格(L)', color_continuous_scale='RdYlBu_r')
+            fig_sun = px.sunburst(sun_df, path=['店家', '標籤1', '加料狀態', '飲料品項'], values='價格(L)', color='價格(L)', color_continuous_scale='YlOrRd')
             fig_sun.update_layout(margin=dict(t=20, l=10, r=10, b=20), height=600)
             fig_sun.update_traces(marker=dict(line=dict(color='#FFFFFF', width=1)), hovertemplate='<b>%{label}</b><br>大杯售價: $ %{color:.0f}<extra></extra>')
             st.plotly_chart(fig_sun, use_container_width=True)
@@ -267,9 +320,10 @@ with tab3:
             with radar_c1:
                 st.markdown("#### 🕸️ 商業模式雷達圖")
                 fig_radar = go.Figure()
-                fig_radar.add_trace(go.Scatterpolar(r=scores_a, theta=categories, fill='toself', name=brand_a, line_color='#EF4444'))
-                fig_radar.add_trace(go.Scatterpolar(r=scores_b, theta=categories, fill='toself', name=brand_b, line_color='#3B82F6'))
-                fig_radar.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 100])), showlegend=True, margin=dict(t=40, b=40, l=40, r=40))
+                fig_radar.add_trace(go.Scatterpolar(r=scores_a, theta=categories, fill='toself', name=brand_a, fillcolor='rgba(239, 68, 68, 0.2)', line_color='#EF4444'))
+                fig_radar.add_trace(go.Scatterpolar(r=scores_b, theta=categories, fill='toself', name=brand_b, fillcolor='rgba(59, 130, 246, 0.2)', line_color='#3B82F6'))
+                fig_radar.update_layout(polar=dict(radialaxis=dict(visible=True, range=[0, 100], gridcolor="#CBD5E1"), angularaxis=dict(gridcolor="#CBD5E1")), showlegend=True, margin=dict(t=40, b=40, l=40, r=40))
+                fig_radar = apply_common_layout(fig_radar)
                 st.plotly_chart(fig_radar, use_container_width=True)
                 
                 with st.expander("📋 展開直接對比數據"):
@@ -291,7 +345,7 @@ with tab3:
             with radar_c2:
                 st.markdown("#### 📊 價格分佈疊加圖 (Histogram)")
                 pk_df = df[df['店家'].isin([brand_a, brand_b])]
-                fig_pk1 = px.histogram(pk_df, x="價格(L)", color="店家", barmode="overlay", nbins=15, color_discrete_sequence=['#EF4444', '#3B82F6'], opacity=0.7)
+                fig_pk1 = px.histogram(pk_df, x="價格(L)", color="店家", barmode="overlay", nbins=15, color_discrete_sequence=['#EF4444', '#3B82F6'], opacity=0.6)
                 fig_pk1 = apply_common_layout(fig_pk1)
                 st.plotly_chart(fig_pk1, use_container_width=True)
         else:
@@ -327,7 +381,7 @@ with tab4:
     
     with box_col:
         st.markdown("#### 📦 價格區間與極端值 (盒鬚圖)")
-        fig_box = px.box(filtered_df, x='店家', y='價格(L)', color='店家', points="all", hover_data={'店家': False, '飲料品項': True, '加料狀態': True, '價格(L)': ':.0f'})
+        fig_box = px.box(filtered_df, x='店家', y='價格(L)', color='店家', points="all", color_discrete_sequence=px.colors.qualitative.Pastel)
         fig_box.update_layout(xaxis={'categoryorder':'median descending'}, showlegend=False, yaxis_title="大杯價格 (元)", xaxis_title="")
         fig_box = apply_common_layout(fig_box)
         st.plotly_chart(fig_box, use_container_width=True)
@@ -358,15 +412,16 @@ with tab5:
     if y_axis != x_axis:
         if value_axis == '計算品項數量 (Count)':
             pivot_df = pd.crosstab(filtered_df[y_axis], filtered_df[x_axis])
-            color_scale = 'Blues'
+            color_scale = 'Cividis'
         else:
             pivot_df = filtered_df.pivot_table(index=y_axis, columns=x_axis, values='價格(L)', aggfunc='mean').round(1)
-            color_scale = 'YlOrRd'
+            color_scale = 'Tealrose'
 
         st.markdown("#### 📊 樞紐分析熱力圖")
         fig_heatmap = px.imshow(pivot_df, text_auto=True, color_continuous_scale=color_scale, aspect="auto")
-        fig_heatmap.update_layout(margin=dict(t=20, b=20, l=0, r=0))
+        fig_heatmap.update_layout(margin=dict(t=40, b=20, l=0, r=0))
         fig_heatmap.update_xaxes(side="top")
+        fig_heatmap = apply_common_layout(fig_heatmap)
         st.plotly_chart(fig_heatmap, use_container_width=True)
         
         with st.expander("📋 展開查看樞紐分析明細表"):
@@ -425,7 +480,7 @@ with tab6:
             reg_df, x='價格(M)', y='價格(L)', color='AI升杯判定',
             hover_data={'店家': True, '飲料品項': True, '價格(M)': ':.0f', '價格(L)': ':.0f', '升杯落差': ':.1f'},
             color_discrete_map={"⚠️ 升杯溢價 (偏貴)": "#EF4444", "✅ 合理升杯 (符行情)": "#94A3B8", "🔥 超值升杯 (划算)": "#10B981"},
-            trendline="ols", trendline_scope="overall", opacity=0.8, size_max=12
+            trendline="ols", trendline_scope="overall", opacity=0.85, size_max=11
         )
         fig_reg.update_layout(xaxis_title="中杯實際價格 (自變數 X)", yaxis_title="大杯實際價格 (應變數 Y)", hovermode="closest")
         fig_reg = apply_common_layout(fig_reg)
@@ -450,7 +505,7 @@ with tab6:
         st.warning("⚠️ 此篩選條件下的中/大杯雙重數據不足，無法啟動 AI 預測引擎。")
 
 # ------------------------------------------
-# 頁籤 7：預期心理分析 (究極動態矩陣權重版)
+# 頁籤 7：預期心理分析 (動態矩陣權重版)
 # ------------------------------------------
 with tab7:
     st.markdown("### 🧠 究極矩陣式預期心理分析 (Matrix-Weighted CP Index)")
@@ -540,7 +595,7 @@ with tab7:
             psych_summary, 
             column_config={
                 "平均真實落差": st.column_config.NumberColumn("校正後平均落差", format="%+.1f 元"),
-                "綜合 CP 值指數": st.column_config.ProgressColumn("綜合 CP 值指數", min_value=0, max_value=100, format="%.1f")
+                "綜合 CP 值指數": st.column_config.ProgressColumn("綜合 CP 值指數", min_value=0, max_value=100, format="%.1f", color="blue")
             },
             use_container_width=True
         )
@@ -581,7 +636,7 @@ with tab7:
             max_val = max(psych_df["調整後預期價"].max(), psych_df["價格(L)"].max())
             fig_psych_scatter.add_shape(
                 type="line", x0=min_val, y0=min_val, x1=max_val, y1=max_val, 
-                line=dict(color="rgba(15, 23, 42, 0.5)", dash="dash", width=1.5)
+                line=dict(color="rgba(15, 23, 42, 0.4)", dash="dash", width=1.5)
             )
             fig_psych_scatter.update_layout(xaxis_title="動態權重校正行情 (元)", yaxis_title="實際大杯售價 (元)")
             fig_psych_scatter = apply_common_layout(fig_psych_scatter)
@@ -609,7 +664,7 @@ with tab8:
     st.dataframe(filtered_df, use_container_width=True)
 
 # ------------------------------------------
-# 頁籤 9：AI 全能商業戰略總結報告 (優化重製究極版)
+# 頁籤 9：AI 全能商業戰略總結報告
 # ------------------------------------------
 with tab9:
     st.markdown("### 📝 AI 全能商業戰略總結報告 (Executive Summary)")
@@ -629,7 +684,6 @@ with tab9:
             top_base_pct = (filtered_df['標籤1'] == top_base).sum() / total_items * 100 if total_items > 0 else 0
             topping_pct = (filtered_df['加料'] == 1.0).sum() / total_items * 100 if total_items > 0 else 0
             
-            # 判斷維度 1：市場定價水位 (Price Level)
             if global_avg_price >= 70:
                 price_tier = "premium"
                 market_type = "💎 頂尖客單奢華型藍海"
@@ -643,7 +697,6 @@ with tab9:
                 price_tier = "budget"
                 market_type = "🥊 價格破壞型下沉紅海"
 
-            # 判斷維度 2：加料變現依賴度 (Topping Dependency)
             if topping_pct >= 45:
                 product_strategy = "高度甜品化，極度依賴咀嚼系配料（如白玉、奶蓋、寒天）來拉高客單價與飽足感。"
                 topping_type = "heavy"
@@ -654,27 +707,26 @@ with tab9:
                 product_strategy = "極致純淨，主打茶湯底蘊與原物料本質，刻意降低吧台出杯工序。"
                 topping_type = "light"
 
-            # 綜合生成 Strategic Focus (戰略方針)
             if price_tier == "premium":
                 if topping_type == "heavy":
-                    strategic_focus = f"【奢華甜品化】{product_strategy} 建議強化配料的『稀缺性』（如法式慕斯、季節限定鮮果），透過高顏值視覺包裝創造 IG 傳播效應，此客群對價格極不敏感，賣的是犒賞感。"
+                    strategic_focus = f"【奢華甜品化】{product_strategy} 建議強化配料的『稀缺性』（如法式慕斯、季節限定鮮果），透過高顏值視覺包裝創造傳播效應。"
                 else:
-                    strategic_focus = f"【職人工藝茶】{product_strategy} 行銷應極致放大『單一產區、契作茶園、職人手沖』等故事性。捨棄花俏配料，以純粹的品茶文化建立堅不可摧的品牌信仰。"
+                    strategic_focus = f"【職人工藝茶】{product_strategy} 行銷應極致放大『單一產區、契作茶園』等故事性。以純粹的品茶文化建立品牌信仰。"
             elif price_tier == "mid-high":
                 if topping_type == "heavy" or topping_type == "balanced":
-                    strategic_focus = f"【微創新突圍】此區間為兵家必爭之地。{product_strategy} 建議透過研發『特色帶路雞』（如獨家口味茶凍、新創基底茶）打破定價僵局，創造競品無法輕易複製的記憶點。"
+                    strategic_focus = f"【微創新突圍】此區間為兵家必爭之地。{product_strategy} 建議透過研發『特色帶路雞』（如獨家風味茶凍）打破定價僵局。"
                 else:
-                    strategic_focus = f"【輕負擔精緻飲】{product_strategy} 鎖定注重健康的都會白領，建議行銷主打『低卡、無糖也順口、小農契作』，拉開與大眾市場的質感差距。"
+                    strategic_focus = f"【輕負擔精緻飲】{product_strategy} 鎖定注重健康的都會白領，行銷主打『低卡、小農契作』，拉開與大眾市場的質感差距。"
             elif price_tier == "mass":
-                strategic_focus = f"【規模化防禦】{product_strategy} 核心重點在於『高轉化率與出杯流速』。必須嚴控供應鏈成本，透過數位化點單、會員寄杯點數機制，死死綁定區域型消費者的日常復購習慣。"
+                strategic_focus = f"【規模化防禦】{product_strategy} 核心重點在於『高轉化率與出杯流速』。必須嚴控供應鏈成本，透過數位化點單機制綁定日常復購。"
             else:
-                strategic_focus = f"【極致效率戰】{product_strategy} 生存法則唯有『規模經濟與極致成本控制』。應大刀闊斧刪減低周轉品項，菜單聚焦於爆款純茶與少數暢銷配料，以連鎖量販模式搶佔市佔率。"
+                strategic_focus = f"【極致效率戰】{product_strategy} 生存法則唯有『規模經濟與極致成本控制』。應大刀闊斧刪減低周轉品項，聚焦連鎖量販模式。"
                 
             st.markdown(f"""
-            <div style="background: linear-gradient(135deg, #1E1B4B 0%, #311042 100%); color: #F8FAFC; padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.25); border: 1px solid rgba(255,255,255,0.1); margin-bottom: 25px;">
+            <div style="background: linear-gradient(135deg, #1E1B4B 0%, #1E293B 100%); color: #F8FAFC; padding: 30px; border-radius: 20px; box-shadow: 0 20px 40px rgba(15,23,42,0.2); border: 1px solid rgba(255,255,255,0.05); margin-bottom: 25px;">
                 <h3 style="color: #A5B4FC; margin-top: 0; font-weight: 900; letter-spacing: 1px;">🔮 戰情官決策大腦：戰略白皮書</h3>
                 <p style="font-size: 14px; color: #CBD5E1; line-height: 1.6;">本報告由戰情室動態矩陣演算法生成。基於當前篩選的 <b>{total_brands}</b> 個品牌、<b>{total_items}</b> 款品項進行全盤解構，旨在提供 CEO 級別的頂層商業佈局思維。</p>
-                <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
+                <hr style="border-color: rgba(255,255,255,0.08); margin: 20px 0;">
                 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px;">
                     <div>
                         <span style="font-size: 12px; color: #94A3B8; text-transform: uppercase;">當前市場定位分類</span>
@@ -754,9 +806,9 @@ with tab10:
             st.markdown("#### 🔭 當前全市場黃金藍海賽道 Top 3")
             for idx, row in gap_analysis.head(3).iterrows():
                 st.markdown(f"""
-                <div style="background: rgba(99, 102, 241, 0.05); padding: 15px; border-radius: 12px; border-left: 5px solid #6366F1; margin-bottom: 12px; box-shadow: 0 2px 5px rgba(0,0,0,0.02);">
-                    <span style="font-weight:900; color:#4F46E5; font-size:16px;">🏆 Top {idx+1}：{row['標籤1']} × {row['加料狀態']}</span><br>
-                    <span style="font-size:14px; color:#475569;">綜合藍海潛力: <b>{row['藍海指數']} 分</b> | 市場均價: <b>${row['均價']:.1f} 元</b> | 現有競品僅: <b>{row['品項數']} 款</b></span>
+                <div style="background: rgba(99, 102, 241, 0.04); padding: 16px; border-radius: 14px; border-left: 5px solid #4F46E5; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.01);">
+                    <span style="font-weight:900; color:#3730A3; font-size:16px;">🏆 Top {idx+1}：{row['標籤1']} × {row['加料狀態']}</span><br>
+                    <span style="font-size:13px; color:#64748B;">綜合藍海潛力: <b>{row['藍海指數']} 分</b> | 市場均價: <b>${row['均價']:.1f} 元</b> | 現有競品僅: <b>{row['品項數']} 款</b></span>
                 </div>
                 """, unsafe_allow_html=True)
             
@@ -764,13 +816,15 @@ with tab10:
             
             fig_gap = px.scatter_3d(
                 gap_analysis, x='品項數', y='均價', z='藍海指數', size='藍海指數', color='標籤1', text='標籤1',
-                hover_data={'藍海指數': ':.1f', '品項數': True, '均價': ':.1f'}, color_discrete_sequence=px.colors.qualitative.Dark24
+                hover_data={'藍海指數': ':.1f', '品項數': True, '均價': ':.1f'}, color_discrete_sequence=px.colors.qualitative.Prism
             )
             fig_gap.update_traces(textposition='top center', marker=dict(opacity=0.85, line=dict(width=1, color='white')))
             fig_gap.update_layout(
                 scene=dict(
-                    xaxis_title="市場競爭度 (商品總數)", yaxis_title="定價天花板 (大杯均價)", zaxis_title="藍海潛力指數",
-                    camera=dict(eye=dict(x=1.3, y=1.3, z=0.8))
+                    xaxis=dict(title='市場競爭度 (商品數)', backgroundcolor="#F1F5F9", gridcolor="#CBD5E1", showbackground=True),
+                    yaxis=dict(title='定價天花板 (均價)', backgroundcolor="#E2E8F0", gridcolor="#CBD5E1", showbackground=True),
+                    zaxis=dict(title='藍海潛力指數', backgroundcolor="#F8FAFC", gridcolor="#CBD5E1", showbackground=True),
+                    camera=dict(eye=dict(x=1.3, y=1.3, z=0.7))
                 ), height=550, margin=dict(l=0, r=0, b=0, t=30), showlegend=False
             )
             st.plotly_chart(fig_gap, use_container_width=True)
@@ -791,16 +845,16 @@ with tab10:
             rec_m_price = round((rec_l_price - 15) / 5) * 5
             
             st.markdown(f"""
-            <div style="background: linear-gradient(145deg, #1E293B, #0F172A); color: #F8FAFC; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(0,0,0,0.15); border-top: 4px solid #38BDF8;">
+            <div style="background: linear-gradient(145deg, #0F172A, #1E293B); color: #F8FAFC; padding: 25px; border-radius: 16px; box-shadow: 0 10px 30px rgba(15,23,42,0.2); border-top: 4px solid #4F46E5;">
                 <h5 style="color: #38BDF8; margin-top:0; font-weight:800; font-size:16px;">🤖 AI 新品定價與變現指南</h5>
-                <div style="display:flex; justify-content: space-around; margin: 20px 0; background: rgba(255,255,255,0.05); padding: 15px; border-radius: 12px;">
+                <div style="display:flex; justify-content: space-around; margin: 20px 0; background: rgba(255,255,255,0.04); padding: 15px; border-radius: 12px;">
                     <div style="text-align:center;"><span style="font-size:12px; color:#94A3B8;">建議中杯定價</span><br><b style="font-size:26px; color:#FBBF24;">${rec_m_price} 元</b></div>
                     <div style="text-align:center;"><span style="font-size:12px; color:#94A3B8;">建議大杯定價</span><br><b style="font-size:26px; color:#34D399;">${rec_l_price} 元</b></div>
                     <div style="text-align:center;"><span style="font-size:12px; color:#94A3B8;">爆款毛利潛力</span><br><b style="font-size:26px; color:#38BDF8;">{"極致高爆發" if input_tier=="奢華旗艦款 (高溢價/故事包裝)" else "穩健護城河" if input_tier=="市場主流款 (利潤與銷量平衡)" else "薄利多銷型"}</b></div>
                 </div>
                 <p style="font-size:14px; color:#CBD5E1; margin-bottom:6px;"><b>✨ AI 專屬行銷文案包裝指南：</b></p>
-                <p style="font-size:13px; color:#94A3B8; line-height:1.7; background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px;">
-                {"【職人奢華流】契作產地直送頂級 " + input_base + " 悉心淬鍊，融合黃金比例，完美封存最純粹的極致風韻。包裝建議採用高質感霧面冷調杯身，文案主打職人工藝與稀缺性，鎖定注重生活儀式感的都會輕奢客群，輕鬆打破價格防線。" if input_tier=="奢華旗艦款 (高溢價/故事包裝)" else "【每日必喝款】完美揉合大盤精髓，入口滑順、回甘悠長，是菜單上無可取代的靈魂支柱。建議配合辦公室下午茶進行促銷，建立高頻次、高復購率的日常品牌粘性。" if input_tier=="市場主流款 (利潤與銷量平衡)" else "【破局引流彈】以最具市場破壞力的極致價格切入，主打超高性價比與閃電出杯速度。作為門店『帶路雞』，可迅速吸引大批團購新客，並透過引導加點高毛利配料完成獲利二次轉化。"}
+                <p style="font-size:13px; color:#94A3B8; line-height:1.7; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px;">
+                {"【職人奢華流】契作產地直送頂級 " + input_base + " 悉心淬鍊，融合黃金比例，完美封存最純粹的極致風韻。包裝建議採用高質感霧面杯身，文案主打職人工藝與稀缺性，鎖定注重生活儀式感的都會輕奢客群。" if input_tier=="奢華旗艦款 (高溢價/故事包裝)" else "【每日必喝款】完美揉合大盤精髓，入口滑順、回甘悠長，是菜單上無可取代的靈魂支柱。建議配合辦公室下午茶進行促銷，建立高頻次、高復購率的日常品牌粘性。" if input_tier=="市場主流款 (利潤與銷量平衡)" else "【破局引流彈】以最具市場破壞力的極致價格切入，主打超高性價比與閃電出杯速度。作為門店『帶路雞』，可迅速吸引大批團購新客，並透過引導加點高毛利配料完成獲利二次轉化。"}
                 </p>
             </div>
             """, unsafe_allow_html=True)
@@ -832,7 +886,7 @@ with tab11:
         
         st.divider()
         st.markdown(f"""
-        <div style="background: rgba(16, 185, 129, 0.08); padding: 22px; border-radius: 16px; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 4px 10px rgba(0,0,0,0.02);">
+        <div style="background: rgba(16, 185, 129, 0.06); padding: 22px; border-radius: 18px; border: 1px solid rgba(16, 185, 129, 0.2); box-shadow: 0 4px 15px rgba(0,0,0,0.01);">
             <span style="font-size:14px; color:#065F46; font-weight:700;">🎯 單月損益平衡防線 (Break-Even Point)：</span><br>
             <h3 style="margin: 10px 0; color:#047857; font-size:32px; font-weight:900;">{be_volume:,} 杯 / 月</h3>
             <span style="font-size:13px; color:#065F46;">門店平均每日需穩定賣出 <b>{int(np.ceil(be_volume/30))} 杯</b> 即可跨越保本線，往後的每一杯都是純淨利！</span>
@@ -852,10 +906,11 @@ with tab11:
             connector = {"line":{"color":"#CBD5E1", "dash":"dot"}},
             decreasing = {"marker":{"color":"#EF4444"}},
             increasing = {"marker":{"color":"#10B981"}},
-            totals = {"marker":{"color":"#6366F1"}}
+            totals = {"marker":{"color":"#4F46E5"}}
         ))
         fig_wf.update_layout(height=280)
-        st.plotly_chart(apply_common_layout(fig_wf), use_container_width=True)
+        fig_wf = apply_common_layout(fig_wf)
+        st.plotly_chart(fig_wf, use_container_width=True)
         
         st.markdown("#### 📈 月銷量規模 vs 淨利潤動態演化曲線")
         
@@ -873,4 +928,5 @@ with tab11:
                                           text=[f" 損益平衡線 ({be_volume}杯)"], textposition="top right",
                                           marker=dict(color='#F59E0B', size=12, line=dict(color='white', width=2))))
         fig_line.update_layout(showlegend=False, height=320)
-        st.plotly_chart(apply_common_layout(fig_line), use_container_width=True)
+        fig_line = apply_common_layout(fig_line)
+        st.plotly_chart(fig_line, use_container_width=True)
