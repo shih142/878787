@@ -139,8 +139,8 @@ with st.sidebar:
     st.header("🌐 瀏覽器圖形加速優化")
     webgl_compat_mode = st.checkbox(
         "啟用 WebGL 相容防禦模式 (2D 降維)", 
-        value=False,  
-        help="如果您的瀏覽器開啟 3D 圖表時出現空白或 WebGL 錯誤，請勾選此項切換為安全 2D 氣泡圖。"
+        value=True,  
+        help="系統預設開啟 2D 氣泡圖相容模式。若您的顯示卡支援 WebGL，可取消勾選以體驗 3D 視覺。"
     )
 
     st.divider()
@@ -173,14 +173,14 @@ def apply_common_layout(fig):
     fig.update_yaxes(showgrid=True, gridcolor='#334155', linecolor='rgba(0,0,0,0)', title_font=dict(size=13, color='#94A3B8'), tickfont=dict(color='#94A3B8'))
     return fig
 
-# 🚀 專屬 3D 空間美化樣式 (全息懸浮化)
+# 🚀 專屬 3D 空間美化樣式 (高對比度可讀性版)
 axis_style_3d = dict(
-    backgroundcolor="rgba(0,0,0,0)",       # 移除生硬背景牆
-    gridcolor="rgba(99, 102, 241, 0.15)",  # 靛藍色微光網格
-    showbackground=False,                  # 關閉實體牆面
-    zerolinecolor="rgba(99, 102, 241, 0.3)",
-    title_font=dict(color="#A5B4FC", size=13), 
-    tickfont=dict(color="#64748B", size=10)
+    backgroundcolor="rgba(0,0,0,0)",       
+    gridcolor="rgba(99, 102, 241, 0.2)",  
+    showbackground=False,                  
+    zerolinecolor="rgba(99, 102, 241, 0.4)",
+    title_font=dict(color="#F8FAFC", size=14, family="Noto Sans TC"), 
+    tickfont=dict(color="#94A3B8", size=11)
 )
 
 def call_gemini(prompt_text):
@@ -261,7 +261,7 @@ with tab1:
         st.plotly_chart(fig2, use_container_width=True)
 
 # ------------------------------------------
-# 頁籤 2：星系競爭版圖 (全息懸浮化美化版)
+# 頁籤 2：星系競爭版圖 (全息可讀性美化版)
 # ------------------------------------------
 with tab2:
     st.markdown("### 🌌 市場星系與結構解剖")
@@ -287,35 +287,41 @@ with tab2:
             st.plotly_chart(fig_2d_galaxy, use_container_width=True)
         else:
             st.markdown("#### 🔭 品牌 3D 競爭星系圖 (全息美化版)")
-            st.caption("💡 滑鼠可自由旋轉縮放！透過 X(價格)、Y(品項數)、Z(加料佔比) 尋找市場真空藍海區塊。")
+            st.caption("💡 提示：滑鼠停留在氣泡上可查看詳細數據，拖曳可自由旋轉。移除常駐文字以保持畫面整潔。")
+            
+            # 🚀 高可讀性調整：關閉 text，改用 hover_name 顯示，保持 3D 畫面整潔
             fig_3d = px.scatter_3d(quad_df, x='均價', y='品項數', z='加料佔比(%)',
-                                   color='店家', text='店家',
+                                   color='店家', hover_name='店家',
                                    color_discrete_sequence=px.colors.qualitative.Vivid,
                                    hover_data={'店家': False, '均價': ':.1f', '品項數': True, '加料佔比(%)': True})
             
-            # 🚀 美化：精準控制氣泡面積比例與字體透明度
             max_size = quad_df['品項數'].max() if quad_df['品項數'].max() > 0 else 1
             fig_3d.update_traces(
-                textposition='top center', 
-                textfont=dict(size=11, color='rgba(255,255,255,0.7)'), 
+                mode='markers', # 強制隱藏重疊文字
                 marker=dict(
                     size=quad_df['品項數'],
                     sizemode='area', 
                     sizeref=2.*max_size/(40.**2), 
-                    sizemin=5,
-                    line=dict(color='rgba(255,255,255,0.8)', width=1), 
-                    opacity=0.85
+                    sizemin=6,
+                    line=dict(color='rgba(255,255,255,1)', width=1.5), # 強化實體白邊框
+                    opacity=0.9
                 )
             )
             
-            # 🚀 美化：套用透明去背宇宙風格
             fig_3d.update_layout(
                 scene=dict(
-                    xaxis=axis_style_3d, yaxis=axis_style_3d, zaxis=axis_style_3d,
-                    camera=dict(eye=dict(x=1.4, y=1.4, z=0.8))
+                    xaxis=dict(**axis_style_3d, title='大杯均價 (X)'), 
+                    yaxis=dict(**axis_style_3d, title='品項豐富度 (Y)'), 
+                    zaxis=dict(**axis_style_3d, title='加料佔比% (Z)'),
+                    camera=dict(eye=dict(x=1.6, y=1.4, z=0.8))
                 ), 
                 paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-                height=650, margin=dict(l=0, r=0, b=0, t=0), showlegend=True
+                height=650, margin=dict(l=0, r=0, b=0, t=0), showlegend=True,
+                legend=dict(
+                    title_font_family="Noto Sans TC", font=dict(color="#F8FAFC"),
+                    bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="rgba(255,255,255,0.1)", borderwidth=1,
+                    yanchor="top", y=0.99, xanchor="left", x=0.01
+                )
             )
             st.plotly_chart(fig_3d, use_container_width=True)
 
@@ -802,7 +808,7 @@ with tab10:
             """, unsafe_allow_html=True)
 
 # ------------------------------------------
-# 頁籤 11：藍海新品研發實驗室 (全息懸浮化美化版)
+# 頁籤 11：藍海新品研發實驗室 (全息可讀性優化版)
 # ------------------------------------------
 with tab11:
     st.markdown("### 🧪 藍海新品研發與智慧定價實驗室 (Menu R&D Lab)")
@@ -844,35 +850,40 @@ with tab11:
                 fig_2d_gap.update_layout(xaxis_title="現有競品商品數 (競爭度 X)", yaxis_title="市場定價天花板 (利潤 Y)", height=500)
                 st.plotly_chart(fig_2d_gap, use_container_width=True)
             else:
+                # 🚀 高可讀性調整：關閉 text，改用 hover_name，解決 3D 空間文字互相重疊遮蔽的問題
                 fig_gap = px.scatter_3d(
-                    gap_analysis, x='品項數', y='均價', z='藍海指數', color='標籤1', text='標籤1',
-                    hover_data={'藍海指數': ':.1f', '品項數': True, '均價': ':.1f'}, 
-                    color_discrete_sequence=px.colors.qualitative.Pastel
+                    gap_analysis, x='品項數', y='均價', z='藍海指數', color='標籤1', hover_name='標籤1',
+                    hover_data={'標籤1': False, '藍海指數': ':.1f', '品項數': True, '均價': ':.1f'}, 
+                    color_discrete_sequence=px.colors.qualitative.Bold
                 )
                 
-                # 🚀 美化：精準控制氣泡面積比例與字體透明度
                 max_gap_size = gap_analysis['藍海指數'].max() if gap_analysis['藍海指數'].max() > 0 else 1
                 fig_gap.update_traces(
-                    textposition='top center', 
-                    textfont=dict(size=11, color='rgba(255,255,255,0.7)'),
+                    mode='markers', # 強制隱藏散佈圖中的靜態重疊文字
                     marker=dict(
                         size=gap_analysis['藍海指數'],
                         sizemode='area', 
-                        sizeref=2.*max_gap_size/(35.**2), 
-                        sizemin=4,
-                        opacity=0.9, 
-                        line=dict(width=1, color='rgba(255,255,255,0.8)')
+                        sizeref=2.*max_gap_size/(45.**2), # 精準校正氣泡放大倍率，避免大吃小
+                        sizemin=6,
+                        opacity=0.95, 
+                        line=dict(width=1.5, color='rgba(255,255,255,1)') # 強化邊框對比
                     )
                 )
                 
-                # 🚀 美化：套用透明去背宇宙風格
                 fig_gap.update_layout(
                     scene=dict(
-                        xaxis=axis_style_3d, yaxis=axis_style_3d, zaxis=axis_style_3d,
-                        camera=dict(eye=dict(x=1.5, y=1.5, z=0.9))
+                        xaxis=dict(**axis_style_3d, title='現有商品數 (競爭度)'), 
+                        yaxis=dict(**axis_style_3d, title='大杯均價 (天花板)'), 
+                        zaxis=dict(**axis_style_3d, title='藍海潛力指數'),
+                        camera=dict(eye=dict(x=1.6, y=1.4, z=0.8))
                     ), 
                     paper_bgcolor='rgba(0,0,0,0)', plot_bgcolor='rgba(0,0,0,0)',
-                    height=600, margin=dict(l=0, r=0, b=0, t=30), showlegend=True
+                    height=650, margin=dict(l=0, r=0, b=0, t=30), showlegend=True,
+                    legend=dict(
+                        title_font_family="Noto Sans TC", font=dict(color="#F8FAFC"),
+                        bgcolor="rgba(15, 23, 42, 0.8)", bordercolor="rgba(255,255,255,0.1)", borderwidth=1,
+                        yanchor="top", y=0.99, xanchor="left", x=0.01
+                    )
                 )
                 st.plotly_chart(fig_gap, use_container_width=True)
             
