@@ -162,7 +162,7 @@ def apply_common_layout(fig):
         hoverlabel=dict(bgcolor="rgba(15, 23, 42, 0.9)", font_size=14, font_color="#F8FAFC", font_family="Inter", bordercolor="rgba(255,255,255,0.1)"),
         font=dict(color="#334155", family="Noto Sans TC")
     )
-    fig.update_xaxes(showgrid=False, linecolor='#CBD5E1', title_font=dict(size=13, gridcolor='rgba(0,0,0,0)'))
+    fig.update_xaxes(showgrid=False, linecolor='#CBD5E1', title_font=dict(size=13))
     fig.update_yaxes(showgrid=True, gridcolor='#E2E8F0', linecolor='rgba(0,0,0,0)', title_font=dict(size=13))
     return fig
 
@@ -505,7 +505,7 @@ with tab6:
         st.warning("⚠️ 此篩選條件下的中/大杯雙重數據不足，無法啟動 AI 預測引擎。")
 
 # ------------------------------------------
-# 頁籤 7：預期心理分析 (動態矩陣權重版)
+# 頁籤 7：預期心理 analysis (動態矩陣權重版)
 # ------------------------------------------
 with tab7:
     st.markdown("### 🧠 究極矩陣式預期心理分析 (Matrix-Weighted CP Index)")
@@ -777,7 +777,7 @@ with tab9:
                 1.  **市場定位診斷**：目前市場定位屬於 **{market_type}**，核心戰略為：*{strategic_focus}*。
                 2.  **向標竿看齊 (高價溢價)**：參考當前均價最高昂的品牌 **{leader_brand}** 的定價與視覺呈現，檢視自身的產品故事包裝，是否具備支撐高客單價的「情感溢價價值」。
                 3.  **菜單工程斷捨離 (降低內耗)**：目前品項數最多的品牌為 **{volume_brand}**。對於中小型新創品牌，品項過多將導致供應鏈臃腫與原料耗損。強烈建議實施『菜單精簡化』，將品項限縮在 30 款核心爆款內，聚焦出杯效率。
-                4.  **定價動態回測**：在每一次新品研發或配方調整前，請隨時切換至 **「🤖 AI預測模擬」** 頁籤，利用動態迴歸斜率，確保新品定價踩在「消費者預期性價比」的黃金交叉點。
+                4.  **定價動態回測**：在每一次新品研發或配方調整前，請隨時切換至 **「🤖 AI預測模擬」** 頁籤，利用動態迴歸斜率，確保新品定價踩在「消費者預期性性價比」的黃金交叉點。
                 """)
     else:
         st.warning("⚠️ 當前篩選條件下無足夠數據，AI 無法生成戰略報告。")
@@ -854,7 +854,7 @@ with tab10:
                 </div>
                 <p style="font-size:14px; color:#CBD5E1; margin-bottom:6px;"><b>✨ AI 專屬行銷文案包裝指南：</b></p>
                 <p style="font-size:13px; color:#94A3B8; line-height:1.7; background: rgba(0,0,0,0.3); padding: 12px; border-radius: 8px;">
-                {"【職人奢華流】契作產地直送頂級 " + input_base + " 悉心淬鍊，融合黃金比例，完美封存最純粹的極致風韻。包裝建議採用高質感霧面杯身，文案主打職人工藝與稀缺性，鎖定注重生活儀式感的都會輕奢客群。" if input_tier=="奢華旗艦款 (高溢價/故事包裝)" else "【每日必喝款】完美揉合大盤精髓，入口滑順、回甘悠長，是菜單上無可取代的靈魂支柱。建議配合辦公室下午茶進行促銷，建立高頻次、高復購率的日常品牌粘性。" if input_tier=="市場主流款 (利潤與銷量平衡)" else "【破局引流彈】以最具市場破壞力的極致價格切入，主打超高性價比與閃電出杯速度。作為門店『帶路雞』，可迅速吸引大批團購新客，並透過引導加點高毛利配料完成獲利二次轉化。"}
+                {"【職人奢華流】契作產地直送頂級 " + input_base + " 悉心淬鍊，融合黃金比例，完美封存最純粹的極致風韻。包裝建議採用高質感霧面杯身，文案主打職人工藝與稀缺性，鎖定注重生活儀式感的都會輕奢客群。" if input_tier=="奢華旗艦款 (高溢價/故事包裝)" else "【每日必喝款】完美揉合大盤精髓，入口滑順、回甘悠長，是菜單上無可取代的靈魂支柱。建議配合辦公室下午茶進行促銷，建立高頻次、高復購率的日常品牌粘性。" if input_tier=="市場主流款 (利潤與銷量平衡)" else "【破局引流彈】以最具市場破壞力的極致價格切入，主打超高性性價比與閃電出杯速度。作為門店『帶路雞』，可迅速吸引大批團購新客，並透過引導加點高毛利配料完成獲利二次轉化。"}
                 </p>
             </div>
             """, unsafe_allow_html=True)
