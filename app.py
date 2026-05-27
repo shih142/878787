@@ -85,6 +85,14 @@ st.markdown("""
         padding: 30px; border-radius: 18px; margin-top: 20px;
         box-shadow: 0 15px 35px rgba(0,0,0,0.4);
     }
+    
+    .algo-box {
+        background: rgba(15, 23, 42, 0.6);
+        border: 1px solid rgba(99, 102, 241, 0.15);
+        padding: 20px;
+        border-radius: 12px;
+        margin-bottom: 20px;
+    }
     </style>
 """, unsafe_allow_html=True)
 
@@ -231,7 +239,7 @@ with tab1:
     <div class="ai-insight-box">
         <h4>🧠 AI 戰略分析大腦 (CEO Insight 快照)</h4>
         <ul>
-            <li><strong>定價天花板：</strong>目前選取範圍內，定價最高昂的品牌是 <b>{most_expensive['店家']}</b> (均價 ${most_expensive['均價']:.1f})，主主打高客單價策略。</li>
+            <li><strong>定價天花板：</strong>目前選取範圍內，定價最高昂的品牌是 <b>{most_expensive['店家']}</b> (均價 ${most_expensive['均價']:.1f})，主打高客單價策略。</li>
             <li><strong>平價破壞者：</strong>定價最親民的品牌是 <b>{cheapest['店家']}</b> (均價 ${cheapest['均價']:.1f})，適合以量取勝的量販戰術。</li>
             <li><strong>菜單海王：</strong><b>{most_items['店家']}</b> 擁有高達 {most_items['品項數']} 個品項，產品線豐富，但需注意庫存管理成本。</li>
             <li><strong>咀嚼系霸主：</strong><b>{most_toppings['店家']}</b> 的加料品項佔比高達 {most_toppings['加料佔比']*100:.0f}%，是靠高毛利配料推升營收的典範。</li>
@@ -439,7 +447,7 @@ with tab4:
     st.divider()
 
     # ==========================================
-    # 新增功能：每一間飲料店最貴品項和最便宜品項比較
+    # 各品牌極值品項對比功能 (最貴 vs 最便宜)
     # ==========================================
     st.markdown("#### 💎 各品牌極值品項對比 (最貴 vs 最便宜)")
     st.caption("🔍 剖析各大品牌菜單的定價極端點，對比其最頂級的高客單價品項與最低價的入門純茶款。")
@@ -632,10 +640,48 @@ with tab6:
         st.warning("⚠️ 此篩選條件下的中/大杯數據不足，無法啟動 AI 預測引擎。")
 
 # ------------------------------------------
-# 頁籤 7：預期心理分析
+# 頁籤 7：預期心理分析 (🌟 已整合 MCDA 演算法解說模組 🌟)
 # ------------------------------------------
 with tab7:
-    st.markdown("### 🧠 究極矩陣式預期心理分析 (Matrix-Weighted CP Index)")
+    st.markdown("### 🧠 🧠 究極矩陣式預期心理分析 (Matrix-Weighted CP Index)")
+    
+    # ==========================================
+    # 新增演算法邏輯核心詳解控制面板
+    # ==========================================
+    with st.expander("🔬 🔬 矩陣加權 CP 值分析演算法（MCDA）邏輯核心詳解", expanded=False):
+        st.markdown("""
+        <div class="algo-box">
+            <h4 style="color: #818CF8 !important; margin-top: 0;">📐 演算法架構解剖學</h4>
+            <p>本系統導入的 <b>MCDA（Multi-Criteria Decision Analysis，多基準意思決定分析）</b> 模型，旨在量化消費者掏錢時的「主觀體感代價」。大數據單純的平均價無法反映產品真正的溢價能力，因此我們透過文本挖掘與權重矩陣進行動態校正：</p>
+            
+            <h5 style="color: #38BDF8 !important;">1. 確立基底市場預期價（Base Expectation）</h5>
+            <p>系統首先將大盤資料依據 <b>[茶種基底 (標籤1)]</b> 與 <b>[配料狀態 (有/無加料)]</b> 交叉分組，計算出該品類的群集平均數，作為市場對該飲品類別的基礎價格共識（$P_{base}$）。</p>
+            
+            <h5 style="color: #38BDF8 !important;">2. 動態文字特徵提取與矩陣加權因子</h5>
+            <p>當個別品項名稱包含特定高客單或高工藝關鍵字時，演算法會啟動加權機制，校正消費者的心理預期水位：</p>
+            <ul>
+                <li><b>物料成本修正因子 ($W_m$)：</b>當名稱命中 <i>鮮奶、拿鐵、歐蕾、芝士、奶蓋、厚乳</i> 等高成本乳源，注入 <b>+18%</b> 預期溢價；命中 <i>鮮果、葡萄、草莓</i> 等新鮮水果，注入 <b>+15%</b> 預期溢價。</li>
+                <li><b>工藝複雜度修正因子 ($W_c$)：</b>當名稱命中 <i>冰沙、特調、現打、雙Q、多肉</i> 等需要複雜門市手作或複合多料工序，注入 <b>+8%</b> 預期溢價。</li>
+                <li><b>品牌光環與招牌因子 ($W_b$)：</b>當名稱命中 <i>招牌、經典、得獎、極品、莊園</i> 等行銷錨點字眼，注入 <b>+5%</b> 心理預期溢價。</li>
+            </ul>
+            
+            <h5 style="color: #38BDF8 !important;">3. 核心數學模型公式</h5>
+            <p>每一杯飲料的<b>調整後心理預期價（$P_{adjusted}$）</b>計算公式如下：</p>
+            <div style="background: rgba(30, 41, 59, 0.8); padding: 12px; border-radius: 8px; text-align: center; font-size: 16px; margin: 10px 0; border: 1px solid rgba(255,255,255,0.05);">
+                $$P_{adjusted} = P_{base} \\times (1.0 + W_m + W_c + W_b)$$
+            </div>
+            <p>接著，計算<b>真實價格落差（$\Delta P$）</b>：$$\\Delta P = 實際大杯售價 - P_{adjusted}$$</p>
+            <p>最終轉化為<b>綜合 CP 值指數（Score）</b>，公式將落差動態映射至 0-100 分的象限：$$Score = \\text{Clip}\\left(60 - (\\Delta P \\times 3.5), \\, 0, \\, 100\\right)$$</p>
+            
+            <h5 style="color: #38BDF8 !important;">4. 消費者體感矩陣分類基準</h5>
+            <ul>
+                <li><b>💸 品牌溢價（主打高質感）：</b>當 $\\Delta P \\ge 3.5 \\text{ 元}$。代表實際售價高於市場動態行情，通常依賴高強度的品牌信仰或包裝溢價。</li>
+                <li><b>🤑 體感超值（利潤回饋）：</b>當 $\\Delta P \\le -3.5 \\text{ 元}$。代表實際售價遠低於物料與工藝公定行情，極易引爆社群擴散與破局爆單。</li>
+                <li><b>😐 符合預期（市場行情）：</b>落差於 $\\pm 3.5 \\text{ 元}$ 之間。屬於健康的營收護城河品項。</li>
+            </ul>
+        </div>
+        """, unsafe_allow_html=True)
+
     st.caption("導入 MCDA 演算法，依據品項的「物料成本」、「工藝複雜度」與「品牌招牌光環」進行動態權重校正。")
     
     diagnostic_df = filtered_df.copy()
@@ -854,7 +900,7 @@ with tab10:
                 with st.spinner("🧠 Gemini 大腦正在深度解構全域矩陣並撰寫白皮書，請稍候..."):
                     
                     prompt = f"""
-                    你是一位精通台灣手搖飲連鎖市場、餐飲食應鏈以及消費者心理學的頂級商業策略顧問（Chief Strategy Officer）。
+                    你是一位精通台灣手搖飲連鎖市場、餐飲供應鏈以及消費者心理學的頂級商業策略顧問（Chief Strategy Officer）。
                     請根據以下提供的當前市場真實大數據統計快照，為執行長（CEO）撰寫一份極具戰略高度與落地執行細節的「商業戰略白皮書」。
                     
                     【當前市場篩選大數據快照】：
@@ -910,7 +956,7 @@ with tab11:
         
         rd_c1, rd_c2 = st.columns([1, 1.2])
         with rd_c1:
-            st.markdown("#### 🔭 當前全市場黃金藍海賽道 Top 3")
+            st.markdown("#### 🔭 当全市場黃金藍海賽道 Top 3")
             for idx, row in gap_analysis.head(3).iterrows():
                 st.markdown(f"""
                 <div style="background: rgba(99, 102, 241, 0.1); padding: 16px; border-radius: 14px; border-left: 5px solid #6366F1; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
@@ -1017,9 +1063,9 @@ with tab11:
     else:
         st.warning("數據庫結構不完整，無法執行研發矩陣計算。")
 
-# ==========================================
+# ------------------------------------------
 # 頁籤 12：財務損益推演
-# ==========================================
+# ------------------------------------------
 with tab12:
     st.markdown("### 💰 門店營運利潤與損益平衡推演 (Profit Simulator)")
     st.caption("結合當前過濾市場的真實大杯價格水位，動態推演門店原物料成本（COGS）、固定開銷與單月保本營業防線。")
