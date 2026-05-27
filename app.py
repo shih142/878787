@@ -181,7 +181,6 @@ def apply_common_layout(fig):
     fig.update_yaxes(showgrid=True, gridcolor='#334155', linecolor='rgba(0,0,0,0)', title_font=dict(size=13, color='#94A3B8'), tickfont=dict(color='#94A3B8'))
     return fig
 
-# 🚀 專屬 3D 空間美化樣式 (高對比度可讀性版)
 axis_style_3d = dict(
     backgroundcolor="rgba(0,0,0,0)",       
     gridcolor="rgba(99, 102, 241, 0.2)",  
@@ -640,166 +639,171 @@ with tab6:
         st.warning("⚠️ 此篩選條件下的中/大杯數據不足，無法啟動 AI 預測引擎。")
 
 # ------------------------------------------
-# 頁籤 7：預期心理分析 (🌟 已整合 MCDA 演算法解說模組 🌟)
+# 頁籤 7：預期心理分析 (🌟 深度優化可讀性與整合沙盤推演模擬器 🌟)
 # ------------------------------------------
 with tab7:
-    st.markdown("### 🧠 🧠 究極矩陣式預期心理分析 (Matrix-Weighted CP Index)")
+    st.markdown("### 🧠 究極矩陣式預期心理分析 (Matrix-Weighted CP Index)")
     
     # ==========================================
-    # 新增演算法邏輯核心詳解控制面板
+    # 增加 MCDA 演算法解釋可讀性模組
     # ==========================================
-    with st.expander("🔬 🔬 矩陣加權 CP 值分析演算法（MCDA）邏輯核心詳解", expanded=False):
+    with st.expander("🔬 🔬 矩陣加權 CP 值分析演算法（MCDA）邏輯核心詳解", expanded=True):
         st.markdown("""
         <div class="algo-box">
-            <h4 style="color: #818CF8 !important; margin-top: 0;">📐 演算法架構解剖學</h4>
-            <p>本系統導入的 <b>MCDA（Multi-Criteria Decision Analysis，多基準意思決定分析）</b> 模型，旨在量化消費者掏錢時的「主觀體感代價」。大數據單純的平均價無法反映產品真正的溢價能力，因此我們透過文本挖掘與權重矩陣進行動態校正：</p>
+            <h4 style="color: #818CF8 !important; margin-top: 0; font-weight:800;">📐 演算法架構與核心算式解剖學</h4>
+            <p>本系統導入的 <b>MCDA (多基準意思決定分析)</b> 模型，旨在量化消費者掏錢時的「主觀體感代價」。大數據單純的平均價無法反映產品真正的技術防禦門檻與高溢價能力，因此我們透過文本挖掘與權重矩陣進行動態校正：</p>
             
-            <h5 style="color: #38BDF8 !important;">1. 確立基底市場預期價（Base Expectation）</h5>
-            <p>系統首先將大盤資料依據 <b>[茶種基底 (標籤1)]</b> 與 <b>[配料狀態 (有/無加料)]</b> 交叉分組，計算出該品類的群集平均數，作為市場對該飲品類別的基礎價格共識（$P_{base}$）。</p>
+            <h5 style="color: #38BDF8 !important; font-weight:700;">📌 第一步：確立市場預期基準價 ($P_{base}$)</h5>
+            <p>系統首先將大盤資料依據 <b>[茶種基底 (標籤1)]</b> 與 <b>[配料狀態 (有/無加料)]</b> 交叉群集分組，計算出全市場同類別的平均大杯售價，作為消費者對該飲品類別的定價公定共識（$P_{base}$）。</p>
             
-            <h5 style="color: #38BDF8 !important;">2. 動態文字特徵提取與矩陣加權因子</h5>
-            <p>當個別品項名稱包含特定高客單或高工藝關鍵字時，演算法會啟動加權機制，校正消費者的心理預期水位：</p>
+            <h5 style="color: #38BDF8 !important; font-weight:700;">📌 第二步：動態提取文本特徵與加權校正因子</h5>
+            <p>當個別品項名稱包含特定高客單或高工藝關鍵字時，演算法會動態注入心理加成，校正行情天花板：</p>
             <ul>
-                <li><b>物料成本修正因子 ($W_m$)：</b>當名稱命中 <i>鮮奶、拿鐵、歐蕾、芝士、奶蓋、厚乳</i> 等高成本乳源，注入 <b>+18%</b> 預期溢價；命中 <i>鮮果、葡萄、草莓</i> 等新鮮水果，注入 <b>+15%</b> 預期溢價。</li>
-                <li><b>工藝複雜度修正因子 ($W_c$)：</b>當名稱命中 <i>冰沙、特調、現打、雙Q、多肉</i> 等需要複雜門市手作或複合多料工序，注入 <b>+8%</b> 預期溢價。</li>
-                <li><b>品牌光環與招牌因子 ($W_b$)：</b>當名稱命中 <i>招牌、經典、得獎、極品、莊園</i> 等行銷錨點字眼，注入 <b>+5%</b> 心理預期溢價。</li>
+                <li>🥛 <b>高物料成本因子 ($W_m$)：</b>當名稱命中 <i>鮮奶、拿鐵、歐蕾、芝士、奶蓋、厚乳、重乳</i> $\rightarrow$ 注入 <b>+18%</b> 預期溢價；命中 <i>鮮果、葡萄、草莓、芒果、蘋果、檸檬、百香、雷夢</i> $\rightarrow$ 注入 <b>+15%</b> 預期溢價。</li>
+                <li>⏳ <b>高工藝複雜度因子 ($W_c$)：</b>當名稱命中 <i>冰沙、特調、現打、雙Q、三兄弟、多肉、白玉</i> $\rightarrow$ 注入 <b>+8%</b> 手作與工序複雜溢價。</li>
+                <li>🎯 <b>品牌招牌光環因子 ($W_b$)：</b>當名稱命中 <i>招牌、經典、得獎、極品、首創、特選、莊園、丘森</i> $\rightarrow$ 注入 <b>+5%</b> 情境心理錨定溢價。</li>
             </ul>
-            
-            <h5 style="color: #38BDF8 !important;">3. 核心數學模型公式</h5>
-            <p>每一杯飲料的<b>調整後心理預期價（$P_{adjusted}$）</b>計算公式如下：</p>
-            <div style="background: rgba(30, 41, 59, 0.8); padding: 12px; border-radius: 8px; text-align: center; font-size: 16px; margin: 10px 0; border: 1px solid rgba(255,255,255,0.05);">
-                $$P_{adjusted} = P_{base} \\times (1.0 + W_m + W_c + W_b)$$
+            <p><b>💡 調整後心理預期價（$P_{adjusted}$）核心數學模型公式：</b></p>
+            <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; font-family: monospace; color: #FBBF24; margin-bottom: 12px; font-size:14px; border: 1px solid rgba(255,255,255,0.05);">
+                P_adjusted = P_base × (1.0 + W_m + W_c + W_b)
             </div>
-            <p>接著，計算<b>真實價格落差（$\Delta P$）</b>：$$\\Delta P = 實際大杯售價 - P_{adjusted}$$</p>
-            <p>最終轉化為<b>綜合 CP 值指數（Score）</b>，公式將落差動態映射至 0-100 分的象限：$$Score = \\text{Clip}\\left(60 - (\\Delta P \\times 3.5), \\, 0, \\, 100\\right)$$</p>
             
-            <h5 style="color: #38BDF8 !important;">4. 消費者體感矩陣分類基準</h5>
+            <h5 style="color: #38BDF8 !important; font-weight:700;">📌 第三步：消費者體感分類與 CP 值指數映射</h5>
+            <p>計算實際售價與校正預期價的<b>真實價格落差（$\Delta P$）</b>：<code>ΔP = 實際售價 - P_adjusted</code></p>
             <ul>
-                <li><b>💸 品牌溢價（主打高質感）：</b>當 $\\Delta P \\ge 3.5 \\text{ 元}$。代表實際售價高於市場動態行情，通常依賴高強度的品牌信仰或包裝溢價。</li>
-                <li><b>🤑 體感超值（利潤回饋）：</b>當 $\\Delta P \\le -3.5 \\text{ 元}$。代表實際售價遠低於物料與工藝公定行情，極易引爆社群擴散與破局爆單。</li>
-                <li><b>😐 符合預期（市場行情）：</b>落差於 $\\pm 3.5 \\text{ 元}$ 之間。屬於健康的營收護城河品項。</li>
+                <li>💸 <b>品牌溢價 (主打高質感)：</b>當 $\Delta P \ge 3.5 \text{ 元}$。實際定價高於動態行情，依賴強大的品牌信仰或高階包裝故事支撐。</li>
+                <li>🤑 <b>體感超值 (利潤回饋)：</b>當 $\Delta P \le -3.5 \text{ 元}$。實際定價遠低於物料與工藝公定行情，極易引爆辦公室團購與社群破局爆單。</li>
+                <li>😐 <b>符合預期 (市場行情)：</b>落差於 $\pm 3.5 \text{ 元}$ 之間。屬於健康的企業營收護城河。</li>
             </ul>
+            <p><b>📊 綜合 CP 值指數（Score）對應公式：</b></p>
+            <div style="background: rgba(0,0,0,0.2); padding: 12px; border-radius: 8px; font-family: monospace; color: #34D399; font-size:14px; border: 1px solid rgba(255,255,255,0.05);">
+                綜合 CP 值指數 = Clip( 60 - (ΔP × 3.5),  0,  100 )
+            </div>
         </div>
         """, unsafe_allow_html=True)
-
-    st.caption("導入 MCDA 演算法，依據品項的「物料成本」、「工藝複雜度」與「品牌招牌光環」進行動態權重校正。")
+        
+    st.divider()
     
-    diagnostic_df = filtered_df.copy()
-    diagnostic_df['加料狀態'] = diagnostic_df['加料狀態'].fillna('純茶/無加料')
-    diagnostic_df = diagnostic_df.dropna(subset=['價格(L)'])
+    # ==========================================
+    # 加入演算法沙盤推演工具模組 (MCDA Sandbox)
+    # ==========================================
+    st.markdown("#### 🧪 演算法沙盤推演模擬器 (MCDA Sandbox)")
+    st.caption("💡 您可以在這裡輸入任意虛擬飲品名稱與價格，即時測試底層 MCDA 演算法如何自動提取文本特徵並計算消費者體感。")
     
-    psych_df = pd.merge(diagnostic_df, market_expectation, on=['標籤1', '加料狀態'], how='left')
-    global_l_mean = df['價格(L)'].mean() if not df.empty else 50
-    psych_df['市場預期價'] = psych_df['市場預期價'].fillna(global_l_mean)
-
-    if not psych_df.empty:
-        def calculate_matrix_weighted_cp(row):
-            item_name = str(row['飲料品項'])
-            base_expectation = row['市場預期價']
-            W_m, W_b, W_c = 0.0, 0.0, 0.0
-            
-            if any(k in item_name for k in ['鮮奶', '拿鐵', '歐蕾', '芝士', '奶蓋', '厚乳', '重乳']):
-                W_m = 0.18
-            elif any(k in item_name for k in ['鮮果', '葡萄', '草莓', '芒果', '蘋果', '檸檬', '百香', '雷夢']):
-                W_m = 0.15
-                
-            if any(k in item_name for k in ['冰沙', '特調', '現打', '雙Q', '三兄弟', '多肉', '白玉']):
-                W_c = 0.08
-                
-            if any(k in item_name for k in ['招牌', '經典', '得獎', '極品', '首創', '特選', '莊園', '丘森']):
-                W_b = 0.05
-                
-            total_factor = 1.0 + W_m + W_b + W_c
-            return base_expectation * total_factor
-
-        psych_df['調整後預期價'] = psych_df.apply(calculate_matrix_weighted_cp, axis=1)
-        psych_df['真實價格落差'] = psych_df['價格(L)'] - psych_df['調整後預期價']
+    sb_c1, sb_c2 = st.columns([1, 1.2])
+    with sb_c1:
+        sb_name = st.text_input("🔮 1. 輸入模擬飮品名稱", value="招牌現打多肉草莓芝士歐蕾", help="您可以試著加入『鮮奶』、『草莓』、『現打』、『招牌』等關鍵字查看權重變化")
+        sb_base_p = st.number_input("📋 2. 設定市場大盤基準預期價 (元)", min_value=15, max_value=150, value=55, step=5)
+        sb_real_p = st.number_input("💰 3. 設定預計實際大杯售價 (元)", min_value=15, max_value=200, value=80, step=5)
+    
+    # 沙盤推演核心特徵計算
+    s_wm, s_wc, s_wb = 0.0, 0.0, 0.0
+    if any(k in sb_name for k in ['鮮奶', '拿鐵', '歐蕾', '芝士', '奶蓋', '厚乳', '重乳']): s_wm = 0.18
+    elif any(k in sb_name for k in ['鮮果', '葡萄', '草莓', '芒果', '蘋果', '檸檬', '百香', '雷夢']): s_wm = 0.15
         
-        std_gap = psych_df['真實價格落差'].std()
-        threshold = max(std_gap * 0.8, 3.5) if pd.notna(std_gap) else 4.0 
+    if any(k in sb_name for k in ['冰沙', '特調', '現打', '雙Q', '三兄弟', '多肉', '白玉']): s_wc = 0.08
         
-        def categorize_psych_matrix(gap):
-            if gap >= threshold: return "💸 品牌溢價 (主打高質感)"
-            elif gap <= -threshold: return "🤑 體感超值 (利潤回饋)"
-            else: return "😐 符合預期 (市場行情)"
-            
-        psych_df['消費者體感'] = psych_df['真實價格落差'].apply(categorize_psych_matrix)
+    if any(k in sb_name for k in ['招牌', '經典', '得獎', '極品', '首創', '特選', '莊園', '丘森']): s_wb = 0.05
+    
+    s_adjusted_p = sb_base_p * (1.0 + s_wm + s_wc + s_wb)
+    s_gap = sb_real_p - s_adjusted_p
+    s_score = np.clip(60 - (s_gap * 3.5), 0, 100)
+    
+    if s_gap >= 3.5: s_feeling, s_color = "💸 品牌溢價 (主打高質感)", "#818CF8"
+    elif s_gap <= -3.5: s_feeling, s_color = "🤑 體感超值 (利潤回饋)", "#34D399"
+    else: s_feeling, s_color = "😐 符合預期 (市場行情)", "#475569"
+    
+    with sb_c2:
+        st.markdown("<p style='font-size:14px; color:#94A3B8; font-weight:600;'>📊 沙盤推演即時解碼結果</p>", unsafe_allow_html=True)
+        st.markdown(f"""
+        <div style="background: rgba(30, 41, 59, 0.5); padding: 18px; border-radius: 12px; border: 1px solid rgba(255,255,255,0.04);">
+            <p style="margin: 0 0 8px 0; font-size:13px; color:#94A3B8;">特徵提取權重結果：</p>
+            <ul style="margin: 0 0 12px 0; padding-left: 20px; font-size:13px; color:#CBD5E1;">
+                <li>物料成本修正因子 ($W_m$): <b style="color:#38BDF8;">+{s_wm*100:.0f}%</b></li>
+                <li>工藝複雜度因子 ($W_c$): <b style="color:#38BDF8;">+{s_wc*100:.0f}%</b></li>
+                <li>品牌光環修正因子 ($W_b$): <b style="color:#38BDF8;">+{s_wb*100:.0f}%</b></li>
+            </ul>
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom:12px;">
+                <div style="background:rgba(0,0,0,0.2); padding:8px; border-radius:6px; text-align:center;">
+                    <span style="font-size:11px; color:#94A3B8;">校正後心理預期價</span><br><b style="font-size:16px; color:#FBBF24;">${s_adjusted_p:.1f} 元</b>
+                </div>
+                <div style="background:rgba(0,0,0,0.2); padding:8px; border-radius:6px; text-align:center;">
+                    <span style="font-size:11px; color:#94A3B8;">真實價格落差 (ΔP)</span><br><b style="font-size:16px; color:{'#F43F5E' if s_gap > 0 else '#34D399'};">{'+' if s_gap > 0 else ''}{s_gap:.1f} 元</b>
+                </div>
+            </div>
+            <p style="margin: 0 0 4px 0; font-size:11px; color:#94A3B8;">算定消費者體感：</p>
+            <h5 style="margin: 0 0 12px 0; color:{s_color}; font-weight:800; font-size:16px;">{s_feeling}</h5>
+            <p style="margin: 0 0 4px 0; font-size:11px; color:#94A3B8;">綜合 CP 值指數 ({s_score:.1f} 分)：</p>
+        </div>
+        """, unsafe_allow_html=True)
+        st.progress(int(s_score))
         
-        total_items_p = len(psych_df)
-        premium_pct = (psych_df['消費者體感'] == "💸 品牌溢價 (主打高質感)").sum() / total_items_p * 100
-        value_pct = (psych_df['消費者體感'] == "🤑 體感超值 (利潤回饋)").sum() / total_items_p * 100
-        normal_pct = 100 - premium_pct - value_pct
-        
-        p_c1, p_c2, p_c3 = st.columns(3)
-        p_c1.metric("💸 高質感定位品項佔比", f"{premium_pct:.1f}%")
-        p_c2.metric("😐 營收護城河 (行情品項)", f"{normal_pct:.1f}%")
-        p_c3.metric("🤑 破局爆單 (超值品項)", f"{value_pct:.1f}%")
-        
-        st.divider()
-        
-        st.markdown("#### 📋 品牌動態加權 CP 值轉換總表")
-        psych_summary = psych_df.groupby('店家').agg(
-            高質感品項數=('消費者體感', lambda x: (x == "💸 品牌溢價 (主打高質感)").sum()),
-            符合預期數=('消費者體感', lambda x: (x == "😐 符合預期 (市場行情)").sum()),
-            超值品項數=('消費者體感', lambda x: (x == "🤑 體感超值 (利潤回饋)").sum()),
-            平均真實落差=('真實價格落差', 'mean')
-        ).reset_index()
-        
-        psych_summary['總品項數'] = psych_summary['高質感品項數'] + psych_summary['符合預期數'] + psych_summary['超值品項數']
-        psych_summary['綜合 CP 值指數'] = (60 - (psych_summary['平均真實落差'] * 3.5)).clip(0, 100).round(1)
-        psych_summary = psych_summary.sort_values(by='綜合 CP 值指數', ascending=False).reset_index(drop=True)
-        psych_summary.index += 1
-        
-        st.dataframe(
-            psych_summary, 
-            column_config={
-                "平均真實落差": st.column_config.NumberColumn("校正後平均落差", format="%+.1f 元"),
-                "綜合 CP 值指數": st.column_config.ProgressColumn("綜合 CP 值指數", min_value=0, max_value=100, format="%.1f", color="#818CF8")
-            },
-            use_container_width=True
+    st.divider()
+    
+    # 執行全盤大數據計算矩陣
+    st.markdown("#### 📊 全盤現有品項動態加權運算結果")
+    psych_summary = psych_df.groupby('店家').agg(
+        高質感品項數=('消費者體感', lambda x: (x == "💸 品牌溢價 (主打高質感)").sum()),
+        符合預期數=('消費者體感', lambda x: (x == "😐 符合預期 (市場行情)").sum()),
+        超值品項數=('消費者體感', lambda x: (x == "🤑 體感超值 (利潤回饋)").sum()),
+        平均真實落差=('真實價格落差', 'mean')
+    ).reset_index()
+    
+    psych_summary['總品項數'] = psych_summary['高質感品項數'] + psych_summary['符合預期數'] + psych_summary['超值品項數']
+    psych_summary['綜合 CP 值指數'] = (60 - (psych_summary['平均真實落差'] * 3.5)).clip(0, 100).round(1)
+    psych_summary = psych_summary.sort_values(by='綜合 CP 值指數', ascending=False).reset_index(drop=True)
+    psych_summary.index += 1
+    
+    st.dataframe(
+        psych_summary, 
+        column_config={
+            "平均真實落差": st.column_config.NumberColumn("校正後平均落差", format="%+.1f 元"),
+            "綜合 CP 值指數": st.column_config.ProgressColumn("綜合 CP 值指數", min_value=0, max_value=100, format="%.1f", color="#818CF8")
+        },
+        use_container_width=True
+    )
+    
+    st.divider()
+    
+    chart_col1, chart_col2 = st.columns(2)
+    with chart_col1:
+        st.markdown("#### 📊 品牌消費者體感結構分佈")
+        psych_count = psych_df.groupby(['店家', '消費者體感']).size().reset_index(name='數量')
+        fig_psych_bar = px.bar(
+            psych_count, y="店家", x="數量", color="消費者體感", 
+            orientation='h', barmode="relative", text_auto=True,
+            color_discrete_map={
+                "💸 品牌溢價 (主打高質感)": "#818CF8", 
+                "😐 符合預期 (市場行情)": "#475569", 
+                "🤑 體感超值 (利潤回饋)": "#34D399"
+            }
         )
-        
-        st.divider()
-        
-        chart_col1, chart_col2 = st.columns(2)
-        with chart_col1:
-            st.markdown("#### 📊 品牌消費者體感結構分佈")
-            psych_count = psych_df.groupby(['店家', '消費者體感']).size().reset_index(name='數量')
-            fig_psych_bar = px.bar(
-                psych_count, y="店家", x="數量", color="消費者體感", 
-                orientation='h', barmode="relative", text_auto=True,
-                color_discrete_map={
-                    "💸 品牌溢價 (主打高質感)": "#818CF8", 
-                    "😐 符合預期 (市場行情)": "#475569", 
-                    "🤑 體感超值 (利潤回饋)": "#34D399"
-                }
-            )
-            fig_psych_bar.update_layout(xaxis_title="品項數量", yaxis_title="", yaxis={'categoryorder':'total ascending'})
-            fig_psych_bar = apply_common_layout(fig_psych_bar)
-            st.plotly_chart(fig_psych_bar, use_container_width=True)
+        fig_psych_bar.update_layout(xaxis_title="品項數量", yaxis_title="", yaxis={'categoryorder':'total ascending'})
+        fig_psych_bar = apply_common_layout(fig_psych_bar)
+        st.plotly_chart(fig_psych_bar, use_container_width=True)
 
-        with chart_col2:
-            st.markdown("#### 🎯 實際售價 vs 矩陣校正行情價")
-            fig_psych_scatter = px.scatter(
-                psych_df, x="調整後預期價", y="價格(L)", color="消費者體感",
-                hover_data={'店家': True, '飲料品項': True, '標籤1': True, '真實價格落差': ':.1f'},
-                color_discrete_map={
-                    "💸 品牌溢價 (主打高質感)": "#818CF8", 
-                    "😐 符合預期 (市場行情)": "#475569", 
-                    "🤑 體感超值 (利潤回饋)": "#34D399"
-                }, opacity=0.85
-            )
-            fig_psych_scatter.update_traces(marker=dict(size=12, line=dict(width=1.5, color='#0F172A')))
-            
-            min_val = min(psych_df["調整後預期價"].min(), psych_df["價格(L)"].min())
-            max_val = max(psych_df["調整後預期價"].max(), psych_df["價格(L)"].max())
-            fig_psych_scatter.add_shape(
-                type="line", x0=min_val, y0=min_val, x1=max_val, y1=max_val, 
-                line=dict(color="rgba(255, 255, 255, 0.2)", dash="dash", width=1.5)
-            )
-            fig_psych_scatter.update_layout(xaxis_title="動態權重校正行情 (元)", yaxis_title="實際大杯售價 (元)")
-            fig_psych_scatter = apply_common_layout(fig_psych_scatter)
-            st.plotly_chart(fig_psych_scatter, use_container_width=True)
+    with chart_col2:
+        st.markdown("#### 🎯 實際售價 vs 矩陣校正行情價")
+        fig_psych_scatter = px.scatter(
+            psych_df, x="調整後預期價", y="價格(L)", color="消費者體感",
+            hover_data={'店家': True, '飲料品項': True, '標籤1': True, '真實價格落差': ':.1f'},
+            color_discrete_map={
+                "💸 品牌溢價 (主打高質感)": "#818CF8", 
+                "😐 符合預期 (市場行情)": "#475569", 
+                "🤑 體感超值 (利潤回饋)": "#34D399"
+            }, opacity=0.85
+        )
+        fig_psych_scatter.update_traces(marker=dict(size=12, line=dict(width=1.5, color='#0F172A')))
+        
+        min_val = min(psych_df["調整後預期價"].min(), psych_df["價格(L)"].min())
+        max_val = max(psych_df["調整後預期價"].max(), psych_df["價格(L)"].max())
+        fig_psych_scatter.add_shape(
+            type="line", x0=min_val, y0=min_val, x1=max_val, y1=max_val, 
+            line=dict(color="rgba(255, 255, 255, 0.2)", dash="dash", width=1.5)
+        )
+        fig_psych_scatter.update_layout(xaxis_title="動態權重校正行情 (元)", yaxis_title="實際大杯售價 (元)")
+        fig_psych_scatter = apply_common_layout(fig_psych_scatter)
+        st.plotly_chart(fig_psych_scatter, use_container_width=True)
 
 # ------------------------------------------
 # 頁籤 8：🧑‍🤝‍🧑 消費者行為學
@@ -956,7 +960,7 @@ with tab11:
         
         rd_c1, rd_c2 = st.columns([1, 1.2])
         with rd_c1:
-            st.markdown("#### 🔭 当全市場黃金藍海賽道 Top 3")
+            st.markdown("#### 🔭 當前全市場黃金藍海賽道 Top 3")
             for idx, row in gap_analysis.head(3).iterrows():
                 st.markdown(f"""
                 <div style="background: rgba(99, 102, 241, 0.1); padding: 16px; border-radius: 14px; border-left: 5px solid #6366F1; margin-bottom: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.3);">
@@ -1063,9 +1067,9 @@ with tab11:
     else:
         st.warning("數據庫結構不完整，無法執行研發矩陣計算。")
 
-# ------------------------------------------
+# ==========================================
 # 頁籤 12：財務損益推演
-# ------------------------------------------
+# ==========================================
 with tab12:
     st.markdown("### 💰 門店營運利潤與損益平衡推演 (Profit Simulator)")
     st.caption("結合當前過濾市場的真實大杯價格水位，動態推演門店原物料成本（COGS）、固定開銷與單月保本營業防線。")
