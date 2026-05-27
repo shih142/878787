@@ -231,7 +231,7 @@ with tab1:
     <div class="ai-insight-box">
         <h4>🧠 AI 戰略分析大腦 (CEO Insight 快照)</h4>
         <ul>
-            <li><strong>定價天花板：</strong>目前選取範圍內，定價最高昂的品牌是 <b>{most_expensive['店家']}</b> (均價 ${most_expensive['均價']:.1f})，主打高客單價策略。</li>
+            <li><strong>定價天花板：</strong>目前選取範圍內，定價最高昂的品牌是 <b>{most_expensive['店家']}</b> (均價 ${most_expensive['均價']:.1f})，主主打高客單價策略。</li>
             <li><strong>平價破壞者：</strong>定價最親民的品牌是 <b>{cheapest['店家']}</b> (均價 ${cheapest['均價']:.1f})，適合以量取勝的量販戰術。</li>
             <li><strong>菜單海王：</strong><b>{most_items['店家']}</b> 擁有高達 {most_items['品項數']} 個品項，產品線豐富，但需注意庫存管理成本。</li>
             <li><strong>咀嚼系霸主：</strong><b>{most_toppings['店家']}</b> 的加料品項佔比高達 {most_toppings['加料佔比']*100:.0f}%，是靠高毛利配料推升營收的典範。</li>
@@ -247,7 +247,7 @@ with tab1:
         st.markdown("#### 📊 品牌均價排行榜")
         avg_price_df = filtered_df.groupby(['店家', '加料狀態'])['價格(L)'].mean().reset_index()
         fig1 = px.bar(avg_price_df, x='店家', y='價格(L)', color='加料狀態', barmode='group', text_auto='.0f', 
-                     color_discrete_map={'有加料': '#818CF8', '純茶/無加料': '#34D399'})
+                      color_discrete_map={'有加料': '#818CF8', '純茶/無加料': '#34D399'})
         fig1.update_layout(xaxis={'categoryorder':'total descending'}, yaxis_title="平均價格 (元)", xaxis_title="")
         fig1 = apply_common_layout(fig1)
         st.plotly_chart(fig1, use_container_width=True)
@@ -437,6 +437,65 @@ with tab4:
         )
         
     st.divider()
+
+    # ==========================================
+    # 新增功能：每一間飲料店最貴品項和最便宜品項比較
+    # ==========================================
+    st.markdown("#### 💎 各品牌極值品項對比 (最貴 vs 最便宜)")
+    st.caption("🔍 剖析各大品牌菜單的定價極端點，對比其最頂級的高客單價品項與最低價的入門純茶款。")
+    
+    extreme_items = []
+    for store, group in filtered_df.dropna(subset=['價格(L)']).groupby('店家'):
+        if not group.empty:
+            max_idx = group['價格(L)'].idxmax()
+            min_idx = group['價格(L)'].idxmin()
+            max_row = group.loc[max_idx]
+            min_row = group.loc[min_idx]
+            extreme_items.append({
+                "店家": store,
+                "最便宜品項": min_row['飲料品項'],
+                "最低價格": min_row['價格(L)'],
+                "最貴品項": max_row['飲料品項'],
+                "最高價格": max_row['價格(L)'],
+                "店內最大價差": max_row['價格(L)'] - min_row['價格(L)']
+            })
+            
+    if extreme_items:
+        extreme_summary_df = pd.DataFrame(extreme_items).sort_values(by="店內最大價差", ascending=False).reset_index(drop=True)
+        extreme_summary_df.index += 1
+        
+        ex_col1, ex_col2 = st.columns([1.2, 1])
+        with ex_col1:
+            st.markdown("<p style='font-size:14px; color:#94A3B8; font-weight:600;'>📋 各品牌極值數據明細表</p>", unsafe_allow_html=True)
+            st.dataframe(
+                extreme_summary_df,
+                column_config={
+                    "最低價格": st.column_config.NumberColumn(format="$%d"),
+                    "最高價格": st.column_config.NumberColumn(format="$%d"),
+                    "店內最大價差": st.column_config.NumberColumn(format="%d 元"),
+                },
+                use_container_width=True
+            )
+        with ex_col2:
+            st.markdown("<p style='font-size:14px; color:#94A3B8; font-weight:600;'>📊 最貴與最便宜品項價差對比圖</p>", unsafe_allow_html=True)
+            plot_extreme_data = []
+            for item in extreme_items:
+                plot_extreme_data.append({"店家": item["店家"], "品項名稱": item["最便宜品項"], "價格(L)": item["最低價格"], "價格定位": "最便宜品項"})
+                plot_extreme_data.append({"店家": item["店家"], "品項名稱": item["最貴品項"], "價格(L)": item["最高價格"], "價格定位": "最貴品項"})
+            plot_extreme_df = pd.DataFrame(plot_extreme_data)
+            
+            fig_extreme = px.bar(
+                plot_extreme_df, x='店家', y='價格(L)', color='價格定位', barmode='group',
+                text_auto='.0f', hover_data=['品項名稱'],
+                color_discrete_map={'最便宜品項': '#34D399', '最貴品項': '#F43F5E'}
+            )
+            fig_extreme.update_layout(yaxis_title="價格 (元)", xaxis_title="", legend_title="", barmode='group')
+            fig_extreme = apply_common_layout(fig_extreme)
+            st.plotly_chart(fig_extreme, use_container_width=True)
+    else:
+        st.info("💡 目前篩選的資料維度不足以進行極值比較。")
+        
+    st.divider()
     box_col, top_col = st.columns(2)
     
     with box_col:
@@ -493,7 +552,7 @@ with tab5:
         st.error("⚠️ X 軸與 Y 軸不能選擇相同的維度，請重新選擇。")
 
 # ------------------------------------------
-# 頁籤 6：AI 預測引擎 & 定價模擬 (🌟修復了 Statsmodels 報錯🌟)
+# 頁籤 6：AI 預測引擎 & 定價模擬
 # ------------------------------------------
 with tab6:
     st.markdown("### 🤖 AI 價格預測與新品牌定價模擬器")
@@ -502,7 +561,6 @@ with tab6:
     reg_df = reg_df[(reg_df['價格(M)'] > 0) & (reg_df['價格(L)'] > 0)]
     
     if len(reg_df) > 5:
-        # 使用 Scipy 計算迴歸斜率與常數，不依賴 statsmodels
         slope, intercept, r_value, p_value, std_err = stats.linregress(reg_df['價格(M)'], reg_df['價格(L)'])
         
         st.markdown("#### 🎛️ 新品牌定價模擬器 (AI 沙盤推演)")
@@ -537,7 +595,6 @@ with tab6:
         metric_c2.metric("🎯 預測公定價公式", f"$$大杯 = 中杯 \\times {slope:.2f} {sign} {abs(intercept):.1f}$$")
         metric_c3.metric("📈 模型信賴度 ($R^2$)", f"{r_value**2:.2f}")
 
-        # 🚀 移除了容易引發雲端崩潰的 trendline="ols"
         fig_reg = px.scatter(
             reg_df, x='價格(M)', y='價格(L)', color='AI升杯判定',
             hover_data={'店家': True, '飲料品項': True, '價格(M)': ':.0f', '價格(L)': ':.0f', '升杯落差': ':.1f'},
@@ -545,7 +602,6 @@ with tab6:
             opacity=0.85, size_max=11
         )
         
-        # 🚀 徒手補上完美的 AI 預測迴歸基準線！
         x_trend = np.array([reg_df['價格(M)'].min(), reg_df['價格(M)'].max()])
         y_trend = intercept + slope * x_trend
         fig_reg.add_trace(go.Scatter(
@@ -721,7 +777,7 @@ with tab8:
         
         if api_key_input:
             st.success("✨ Gemini 行為心理學專家已就緒。點擊下方按鈕進行買方視角透視。")
-            if st.button("🧑‍🤝‍🧑 啟提 Gemini 消費者視角深度解碼", key="run_gemini_consumer_behavior"):
+            if st.button("🧑‍🤝‍🧑 啟動 Gemini 消費者視角深度解碼", key="run_gemini_consumer_behavior"):
                 with st.spinner("🧠 正在模擬消費者大腦、爬梳 Dcard/Threads 輿情流..."):
                     
                     prompt_consumer = f"""
@@ -798,7 +854,7 @@ with tab10:
                 with st.spinner("🧠 Gemini 大腦正在深度解構全域矩陣並撰寫白皮書，請稍候..."):
                     
                     prompt = f"""
-                    你是一位精通台灣手搖飲連鎖市場、餐飲供應鏈以及消費者心理學的頂級商業策略顧問（Chief Strategy Officer）。
+                    你是一位精通台灣手搖飲連鎖市場、餐飲食應鏈以及消費者心理學的頂級商業策略顧問（Chief Strategy Officer）。
                     請根據以下提供的當前市場真實大數據統計快照，為執行長（CEO）撰寫一份極具戰略高度與落地執行細節的「商業戰略白皮書」。
                     
                     【當前市場篩選大數據快照】：
