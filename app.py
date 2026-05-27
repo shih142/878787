@@ -138,9 +138,9 @@ with st.sidebar:
     st.divider()
     st.header("🌐 瀏覽器圖形加速優化")
     webgl_compat_mode = st.checkbox(
-        "啟用 WebGL 相容防禦模式 (2D 降維)", 
+        "啟用 WebGL 3D 相容投影 (規避硬體報錯)", 
         value=True,  
-        help="系統預設開啟 2D 氣泡圖相容模式。若您的顯示卡支援 WebGL，可取消勾選以體驗 3D 視覺。"
+        help="預設啟動 2D 畫布無損投影技術，完美規避 Streamlit 雲端與部分瀏覽器的 WebGL 崩潰問題，若設備支援可取消勾選以啟用真 3D 渲染。"
     )
 
     st.divider()
@@ -185,7 +185,7 @@ axis_style_3d = dict(
 
 def call_gemini(prompt_text):
     try:
-        model = genai.GenerativeModel('gemini-3-flash-preview')
+        model = genai.GenerativeModel('gemini-1.5-flash')
         response = model.generate_content(prompt_text)
         return response.text
     except Exception as e:
@@ -261,7 +261,7 @@ with tab1:
         st.plotly_chart(fig2, use_container_width=True)
 
 # ------------------------------------------
-# 頁籤 2：星系競爭版圖 (全息可讀性美化版)
+# 頁籤 2：星系競爭版圖
 # ------------------------------------------
 with tab2:
     st.markdown("### 🌌 市場星系與結構解剖")
@@ -274,8 +274,8 @@ with tab2:
         quad_df['加料佔比(%)'] = (quad_df['加料數'] / quad_df['品項數'] * 100).round(1)
         
         if webgl_compat_mode:
-            st.markdown("#### 🔭 品牌空間競爭版圖 (WebGL 2D 相容投影)")
-            st.caption("💡 目前處於相容模式：橫軸為大杯均價，縱軸為品項豐富度，**氣泡大小代表加料佔比(%)**，無損解析 3D 指標結構。")
+            st.markdown("#### 🔭 品牌空間競爭版圖 (WebGL 相容無損投影)")
+            st.caption("💡 透過 2D 畫布呈現 3D 映射：橫軸為大杯均價，縱軸為品項豐富度，**氣泡大小代表加料佔比(%) (Z軸深度)**。")
             fig_2d_galaxy = px.scatter(
                 quad_df, x='均價', y='品項數', size='加料佔比(%)', color='店家', text='店家',
                 size_max=35, color_discrete_sequence=px.colors.qualitative.Vivid,
@@ -287,9 +287,8 @@ with tab2:
             st.plotly_chart(fig_2d_galaxy, use_container_width=True)
         else:
             st.markdown("#### 🔭 品牌 3D 競爭星系圖 (全息美化版)")
-            st.caption("💡 提示：滑鼠停留在氣泡上可查看詳細數據，拖曳可自由旋轉。移除常駐文字以保持畫面整潔。")
+            st.caption("💡 提示：滑鼠停留在氣泡上可查看詳細數據，拖曳可自由旋轉。")
             
-            # 🚀 高可讀性調整：關閉 text，改用 hover_name 顯示，保持 3D 畫面整潔
             fig_3d = px.scatter_3d(quad_df, x='均價', y='品項數', z='加料佔比(%)',
                                    color='店家', hover_name='店家',
                                    color_discrete_sequence=px.colors.qualitative.Vivid,
@@ -297,13 +296,13 @@ with tab2:
             
             max_size = quad_df['品項數'].max() if quad_df['品項數'].max() > 0 else 1
             fig_3d.update_traces(
-                mode='markers', # 強制隱藏重疊文字
+                mode='markers',
                 marker=dict(
                     size=quad_df['品項數'],
                     sizemode='area', 
                     sizeref=2.*max_size/(40.**2), 
                     sizemin=6,
-                    line=dict(color='rgba(255,255,255,1)', width=1.5), # 強化實體白邊框
+                    line=dict(color='rgba(255,255,255,1)', width=1.5), 
                     opacity=0.9
                 )
             )
@@ -494,7 +493,7 @@ with tab5:
         st.error("⚠️ X 軸與 Y 軸不能選擇相同的維度，請重新選擇。")
 
 # ------------------------------------------
-# 頁籤 6：AI 預測引擎 & 定價模擬
+# 頁籤 6：AI 預測引擎 & 定價模擬 (🌟修復了 Statsmodels 報錯🌟)
 # ------------------------------------------
 with tab6:
     st.markdown("### 🤖 AI 價格預測與新品牌定價模擬器")
@@ -503,6 +502,7 @@ with tab6:
     reg_df = reg_df[(reg_df['價格(M)'] > 0) & (reg_df['價格(L)'] > 0)]
     
     if len(reg_df) > 5:
+        # 使用 Scipy 計算迴歸斜率與常數，不依賴 statsmodels
         slope, intercept, r_value, p_value, std_err = stats.linregress(reg_df['價格(M)'], reg_df['價格(L)'])
         
         st.markdown("#### 🎛️ 新品牌定價模擬器 (AI 沙盤推演)")
@@ -537,20 +537,46 @@ with tab6:
         metric_c2.metric("🎯 預測公定價公式", f"$$大杯 = 中杯 \\times {slope:.2f} {sign} {abs(intercept):.1f}$$")
         metric_c3.metric("📈 模型信賴度 ($R^2$)", f"{r_value**2:.2f}")
 
+        # 🚀 移除了容易引發雲端崩潰的 trendline="ols"
         fig_reg = px.scatter(
             reg_df, x='價格(M)', y='價格(L)', color='AI升杯判定',
             hover_data={'店家': True, '飲料品項': True, '價格(M)': ':.0f', '價格(L)': ':.0f', '升杯落差': ':.1f'},
             color_discrete_map={"⚠️ 升杯溢價 (偏貴)": "#F43F5E", "✅ 合理升杯 (符行情)": "#475569", "🔥 超值升杯 (划算)": "#34D399"},
-            trendline="ols", trendline_scope="overall", opacity=0.85, size_max=11
+            opacity=0.85, size_max=11
         )
+        
+        # 🚀 徒手補上完美的 AI 預測迴歸基準線！
+        x_trend = np.array([reg_df['價格(M)'].min(), reg_df['價格(M)'].max()])
+        y_trend = intercept + slope * x_trend
+        fig_reg.add_trace(go.Scatter(
+            x=x_trend, y=y_trend, mode='lines', name='AI 預測公定線',
+            line=dict(color='rgba(255, 255, 255, 0.7)', width=2, dash='dash')
+        ))
+
         fig_reg.update_layout(xaxis_title="中杯實際價格 (自變數 X)", yaxis_title="大杯實際價格 (應變數 Y)", hovermode="closest")
         fig_reg = apply_common_layout(fig_reg)
         st.plotly_chart(fig_reg, use_container_width=True)
+        
+        with st.expander("📋 展開查看 AI 升杯性價比明細表"):
+            table_display = reg_df[['店家', '飲料品項', '標籤1', '價格(M)', '價格(L)', 'AI預測大杯價', '升杯落差', 'AI升杯判定']].copy()
+            table_display = table_display.sort_values(by='升杯落差', ascending=False).reset_index(drop=True)
+            table_display.index += 1
+            st.dataframe(
+                table_display, 
+                column_config={
+                    "價格(M)": st.column_config.NumberColumn(format="$%d"),
+                    "價格(L)": st.column_config.NumberColumn(format="$%d"),
+                    "AI預測大杯價": st.column_config.NumberColumn(format="$%.1f"),
+                    "升杯落差": st.column_config.NumberColumn(format="%+.1f 元"),
+                },
+                use_container_width=True, 
+                height=350
+            )
     else:
         st.warning("⚠️ 此篩選條件下的中/大杯數據不足，無法啟動 AI 預測引擎。")
 
 # ------------------------------------------
-# 頁籤 7：預期心理分析 (動態矩陣權重版)
+# 頁籤 7：預期心理分析
 # ------------------------------------------
 with tab7:
     st.markdown("### 🧠 究極矩陣式預期心理分析 (Matrix-Weighted CP Index)")
@@ -695,7 +721,7 @@ with tab8:
         
         if api_key_input:
             st.success("✨ Gemini 行為心理學專家已就緒。點擊下方按鈕進行買方視角透視。")
-            if st.button("🧑‍🤝‍🧑 啟動 Gemini 消費者視角深度解碼", key="run_gemini_consumer_behavior"):
+            if st.button("🧑‍🤝‍🧑 啟提 Gemini 消費者視角深度解碼", key="run_gemini_consumer_behavior"):
                 with st.spinner("🧠 正在模擬消費者大腦、爬梳 Dcard/Threads 輿情流..."):
                     
                     prompt_consumer = f"""
@@ -808,7 +834,7 @@ with tab10:
             """, unsafe_allow_html=True)
 
 # ------------------------------------------
-# 頁籤 11：藍海新品研發實驗室 (全息可讀性優化版)
+# 頁籤 11：藍海新品研發實驗室
 # ------------------------------------------
 with tab11:
     st.markdown("### 🧪 藍海新品研發與智慧定價實驗室 (Menu R&D Lab)")
@@ -840,6 +866,7 @@ with tab11:
             st.markdown("#### 📊 全品類市場供需與溢價分佈")
             
             if webgl_compat_mode:
+                st.markdown("<p style='font-size:13px; color:#94A3B8; margin-top:-5px;'>💡 WebGL 相容模式：透過 2D 霓虹畫布無損投影藍海指數 (Z軸 = 氣泡大小)。</p>", unsafe_allow_html=True)
                 fig_2d_gap = px.scatter(
                     gap_analysis, x='品項數', y='均價', size='藍海指數', color='標籤1', text='標籤1',
                     size_max=35, color_discrete_sequence=px.colors.qualitative.Pastel,
@@ -850,7 +877,6 @@ with tab11:
                 fig_2d_gap.update_layout(xaxis_title="現有競品商品數 (競爭度 X)", yaxis_title="市場定價天花板 (利潤 Y)", height=500)
                 st.plotly_chart(fig_2d_gap, use_container_width=True)
             else:
-                # 🚀 高可讀性調整：關閉 text，改用 hover_name，解決 3D 空間文字互相重疊遮蔽的問題
                 fig_gap = px.scatter_3d(
                     gap_analysis, x='品項數', y='均價', z='藍海指數', color='標籤1', hover_name='標籤1',
                     hover_data={'標籤1': False, '藍海指數': ':.1f', '品項數': True, '均價': ':.1f'}, 
@@ -859,14 +885,14 @@ with tab11:
                 
                 max_gap_size = gap_analysis['藍海指數'].max() if gap_analysis['藍海指數'].max() > 0 else 1
                 fig_gap.update_traces(
-                    mode='markers', # 強制隱藏散佈圖中的靜態重疊文字
+                    mode='markers',
                     marker=dict(
                         size=gap_analysis['藍海指數'],
                         sizemode='area', 
-                        sizeref=2.*max_gap_size/(45.**2), # 精準校正氣泡放大倍率，避免大吃小
+                        sizeref=2.*max_gap_size/(45.**2),
                         sizemin=6,
                         opacity=0.95, 
-                        line=dict(width=1.5, color='rgba(255,255,255,1)') # 強化邊框對比
+                        line=dict(width=1.5, color='rgba(255,255,255,1)')
                     )
                 )
                 
