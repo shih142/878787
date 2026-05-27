@@ -185,7 +185,7 @@ axis_style_3d = dict(
 
 def call_gemini(prompt_text):
     try:
-        model = genai.GenerativeModel('gemini-3.5-flash')
+        model = genai.GenerativeModel('gemini-3-flash-preview')
         response = model.generate_content(prompt_text)
         return response.text
     except Exception as e:
