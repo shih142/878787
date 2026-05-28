@@ -5,6 +5,46 @@ import plotly.graph_objects as go
 import scipy.stats as stats
 import numpy as np
 import google.generativeai as genai
+import streamlit as st
+
+# 1. 初始化登入狀態（如果還沒紀錄過，預設為未登入）
+if "logged_in" not in st.session_state:
+    st.session_state.logged_in = False
+
+def check_password():
+    """檢查密碼的核心函式"""
+    # 如果已經登入成功，直接回傳 True
+    if st.session_state.logged_in:
+        return True
+
+    # 顯示登入介面
+    st.title("🔒 歡迎訪問，本網站已加密")
+    password_input = st.text_input("請輸入訪問密碼：", type="password")
+    
+    if st.button("確認登入"):
+        # 從 Secrets 中讀取密碼並進行比對
+        if password_input == st.secrets["LOGIN_PASSWORD"]:
+            st.session_state.logged_in = True
+            st.success("🎉 密碼正確！正在載入網頁...")
+            st.rerun()  # 重新整理網頁以套用登入狀態
+        else:
+            st.error("❌ 密碼錯誤，請再試一次。")
+            
+    return False
+
+# 2. 進行密碼檢查
+if check_password():
+    
+    # -----------------------------------------------
+    # 🔓 這裡放你原本網站的「所有內容」
+    # -----------------------------------------------
+    st.title("🎉 歡迎進入主網站！")
+    st.write("只有輸入正確密碼的人，才能看到這個尊榮畫面。")
+    
+    # 範例功能：放一個登出按鈕
+    if st.sidebar.button("登出網站"):
+        st.session_state.logged_in = False
+        st.rerun()
 
 # ==========================================
 # 1. 網頁基本與高階外觀設定 (黑曜石極光 UI)
